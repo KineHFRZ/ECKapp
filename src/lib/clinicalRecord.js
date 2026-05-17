@@ -53,7 +53,6 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.respiratory_rate) vitalParts.push(`FR ${form.respiratory_rate} rpm`);
   if (form.spo2) vitalParts.push(`SpO₂ ${form.spo2}%`);
   if (form.fio2) vitalParts.push(`FiO₂ ${form.fio2}%`);
-  if (form.ikctv) vitalParts.push(`IKCTV ${form.ikctv}`);
   if (form.temperature) vitalParts.push(`T° ${form.temperature}°C`);
   if (form.oxygen_support) vitalParts.push(`oxigenoterapia: ${oxygenLabel(form.oxygen_support)}`);
   if (form.cnaf_flow) vitalParts.push(`flujo CNAF ${form.cnaf_flow} lpm`);
@@ -112,6 +111,11 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     const techStr = rest.length > 0 ? `${rest.join(", ")} y ${last}` : last;
     lines.push(`Se realiza: ${techStr}.`);
   }
+
+  const scaleParts = [];
+  if (form.ikctv) scaleParts.push(`IKCTV ${form.ikctv}`);
+  if (form.fss_icu) scaleParts.push(`FSS-ICU ${form.fss_icu}`);
+  if (scaleParts.length > 0) lines.push(`${scaleParts.join(", ")}.`);
 
   const quedaParts = [];
   if (form.evaluacion_estado_general) quedaParts.push(form.evaluacion_estado_general);

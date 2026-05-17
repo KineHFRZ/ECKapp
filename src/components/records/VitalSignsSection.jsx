@@ -35,27 +35,26 @@ const ruidoPulmonarZonaOptions = ["Anterior", "Ápices", "Bibasal", "Bilateral",
 const ruidosAgregadosOptions = ["Crepitos", "Estertor", "Roncus", "Sibilancias", "Sin Ruidos Agregados"];
 
 const movilidadOptions = [
-  "Bípedo",
-  "Equilibrio dinámico o estático",
   "Evaluación Kinésica",
-  "Fortalecimiento muscular",
+  "Movilidad Pasiva",
+  "Movilidad Activa asistida",
+  "Movilidad Activa resistida",
+  "Fortalecimiento Muscular",
+  "Sedente Borde Cama",
+  "Bipedo",
   "Marcha",
-  "Movilización activa",
-  "Movilización activa asistida",
-  "Movilización pasiva",
-  "Movilización resistida",
-  "Sedente borde cama",
 ];
 
 const respiratoriaOptions = [
-  "Aspiración de secreciones",
+  "Técnicas Kinésicas de Reexpansión Pulmonar",
+  "Técnicas Kinésicas de Drenaje Bronquial",
   "Asistencia técnica con dispositivos para expansión pulmonar",
   "Asistencia técnica con dispositivos para permeabilizar vía aérea",
-  "Ejercicios de reexpansión pulmonar",
-  "Manejo integral de vía aérea artificial",
+  "Tos provocada",
   "Tos asistida",
   "Tos dirigida",
-  "Tos provocada",
+  "Aspiración de secreciones",
+  "Manejo integral de vía aérea artificial",
 ];
 
 const quickObservations = [
