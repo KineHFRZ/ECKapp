@@ -1,5 +1,4 @@
-const db = globalThis.__B44_DB__;
-
+import { db } from "@/api/base44Client";
 
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";

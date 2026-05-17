@@ -40,9 +40,7 @@ function makeEntity(data, id) {
 
 const handler = {
   get(_, name) {
-    console.log('[handler get]', name, 'supabase?', !!supabase)
     if (supabase) {
-      console.log('[handler] usando Supabase para', name)
       return {
         list: async (sort, limit) => {
           let query = supabase.from(name).select('*')
@@ -62,47 +60,29 @@ const handler = {
           return data
         },
         create: async (data) => {
-          try {
-            console.log('[Supabase create]', name, data)
-            const now = new Date().toISOString()
-            const { data: result, error } = await supabase
-              .from(name)
-              .insert({ ...data, created_date: now, updated_date: now })
-              .select()
-              .single()
-            console.log('[Supabase create result]', result, error)
-            if (error) throw error
-            return result
-          } catch (err) {
-            console.error('[Supabase create error]', name, err)
-            alert('Error al guardar: ' + (err.message || err))
-            throw err
-          }
+          const now = new Date().toISOString()
+          const { data: result, error } = await supabase
+            .from(name)
+            .insert({ ...data, created_date: now, updated_date: now })
+            .select()
+            .single()
+          if (error) throw error
+          return result
         },
         update: async (id, data) => {
-          try {
-            const { data: result, error } = await supabase
-              .from(name)
-              .update({ ...data, updated_date: new Date().toISOString() })
-              .eq('id', id)
-              .select()
-              .single()
-            if (error) throw error
-            return result
-          } catch (err) {
-            console.error('[Supabase update error]', name, err)
-            throw err
-          }
+          const { data: result, error } = await supabase
+            .from(name)
+            .update({ ...data, updated_date: new Date().toISOString() })
+            .eq('id', id)
+            .select()
+            .single()
+          if (error) throw error
+          return result
         },
         delete: async (id) => {
-          try {
-            const { error } = await supabase.from(name).delete().eq('id', id)
-            if (error) throw error
-            return { success: true }
-          } catch (err) {
-            console.error('[Supabase delete error]', name, err)
-            throw err
-          }
+          const { error } = await supabase.from(name).delete().eq('id', id)
+          if (error) throw error
+          return { success: true }
         },
       }
     }

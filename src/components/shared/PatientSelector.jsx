@@ -1,5 +1,4 @@
-const db = globalThis.__B44_DB__;
-
+import { db } from "@/api/base44Client";
 
 import { useQuery } from "@tanstack/react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

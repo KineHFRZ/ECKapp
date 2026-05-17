@@ -1,4 +1,4 @@
-const db = globalThis.__B44_DB__;
+import { db } from "@/api/base44Client";
 
 import { useState, useRef } from "react";
 
