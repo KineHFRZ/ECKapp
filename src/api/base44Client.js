@@ -54,29 +54,44 @@ const handler = {
           return data
         },
         create: async (data) => {
-          const now = new Date().toISOString()
-          const { data: result, error } = await supabase
-            .from(name)
-            .insert({ ...data, created_date: now, updated_date: now })
-            .select()
-            .single()
-          if (error) throw error
-          return result
+          try {
+            const now = new Date().toISOString()
+            const { data: result, error } = await supabase
+              .from(name)
+              .insert({ ...data, created_date: now, updated_date: now })
+              .select()
+              .single()
+            if (error) throw error
+            return result
+          } catch (err) {
+            console.error('[Supabase create error]', name, err)
+            throw err
+          }
         },
         update: async (id, data) => {
-          const { data: result, error } = await supabase
-            .from(name)
-            .update({ ...data, updated_date: new Date().toISOString() })
-            .eq('id', id)
-            .select()
-            .single()
-          if (error) throw error
-          return result
+          try {
+            const { data: result, error } = await supabase
+              .from(name)
+              .update({ ...data, updated_date: new Date().toISOString() })
+              .eq('id', id)
+              .select()
+              .single()
+            if (error) throw error
+            return result
+          } catch (err) {
+            console.error('[Supabase update error]', name, err)
+            throw err
+          }
         },
         delete: async (id) => {
-          const { error } = await supabase.from(name).delete().eq('id', id)
-          if (error) throw error
-          return { success: true }
+          try {
+            const { error } = await supabase.from(name).delete().eq('id', id)
+            if (error) throw error
+            return { success: true }
+          } catch (err) {
+            console.error('[Supabase delete error]', name, err)
+            throw err
+          }
         },
       }
     }
