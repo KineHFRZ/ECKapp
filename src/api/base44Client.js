@@ -61,16 +61,19 @@ const handler = {
         },
         create: async (data) => {
           try {
+            console.log('[Supabase create]', name, data)
             const now = new Date().toISOString()
             const { data: result, error } = await supabase
               .from(name)
               .insert({ ...data, created_date: now, updated_date: now })
               .select()
               .single()
+            console.log('[Supabase create result]', result, error)
             if (error) throw error
             return result
           } catch (err) {
             console.error('[Supabase create error]', name, err)
+            alert('Error al guardar: ' + (err.message || err))
             throw err
           }
         },
