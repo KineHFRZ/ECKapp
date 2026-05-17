@@ -6,7 +6,13 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || SUPABASE_ANON_KEY
 
-let supabase = createClient(supabaseUrl, supabaseAnonKey)
+let supabase
+try {
+  supabase = createClient(supabaseUrl, supabaseAnonKey)
+  console.log('[base44Client] Supabase client creado OK')
+} catch (e) {
+  console.error('[base44Client] Error creando cliente Supabase:', e)
+}
 
 // localStorage fallback when Supabase not configured
 const STORAGE_KEY_PREFIX = 'eckapp_'
