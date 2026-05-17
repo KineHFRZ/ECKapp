@@ -208,9 +208,9 @@ export default function ReportPreview({ patient, vitals, scales, interventions }
                 glasgow_score: v.glasgow_score || "", pain_scale: v.pain_scale || "",
                 notes: v.notes || "", cnaf_flow: v.cnaf_flow || "",
                 ventilatory_mode: v.ventilatory_mode || "",
-                ruido_pulmonar: v.ruido_pulmonar || [],
-                ruido_pulmonar_zona: v.ruido_pulmonar_zona || [],
-                ruidos_agregados: v.ruidos_agregados || [],
+                ruido_pulmonar: v.ruido_pulmonar || "",
+                ruido_pulmonar_zona: v.ruido_pulmonar_zona || "",
+                ruidos_agregados: v.ruidos_agregados || "",
               };
 
               const text = generateClinicalRecord({
