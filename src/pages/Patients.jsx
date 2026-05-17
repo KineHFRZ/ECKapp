@@ -54,8 +54,14 @@ export default function Patients() {
   );
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    console.log('[Patients] handleSubmit', form)
     createMut.mutate({ ...form, age: form.age ? Number(form.age) : undefined });
+  };
+
+  const handleSaveClick = () => {
+    console.log('[Patients] button click directo')
+    handleSubmit(null)
   };
 
   const updateField = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
@@ -120,7 +126,7 @@ export default function Patients() {
                     <Input type="date" value={form.admission_date} onChange={(e) => updateField("admission_date", e.target.value)} />
                   </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={createMut.isPending}>
+                <Button type="button" onClick={handleSaveClick} className="w-full" disabled={createMut.isPending}>
                   {createMut.isPending ? "Guardando..." : "Guardar Paciente"}
                 </Button>
               </form>
