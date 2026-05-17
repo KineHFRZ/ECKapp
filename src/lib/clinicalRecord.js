@@ -44,6 +44,8 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`${form.observacion_inicial.trim()}`);
   }
 
+  if (form.apremio_ventilatorio) lines.push(`${form.apremio_ventilatorio}.`);
+
   const vitalParts = [];
   if (form.heart_rate) vitalParts.push(`FC ${form.heart_rate} lpm`);
   if (form.systolic_bp && form.diastolic_bp)
@@ -54,7 +56,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.spo2) vitalParts.push(`SpO₂ ${form.spo2}%`);
   if (form.fio2) vitalParts.push(`FiO₂ ${form.fio2}%`);
   if (form.temperature) vitalParts.push(`T° ${form.temperature}°C`);
-  if (form.oxygen_support) vitalParts.push(`oxigenoterapia: ${oxygenLabel(form.oxygen_support)}`);
+  if (form.oxygen_support) vitalParts.push(`oxigenoterapia/terapia ventilatoria: ${oxygenLabel(form.oxygen_support)}`);
   if (form.cnaf_flow) vitalParts.push(`flujo CNAF ${form.cnaf_flow} lpm`);
   if (form.flujo_naricera) vitalParts.push(`flujo O2 ${form.flujo_naricera} lpm`);
   if (form.irox) vitalParts.push(`iROX ${form.irox}`);
@@ -63,7 +65,6 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`${vitalParts.join(", ")}.`);
   }
 
-  if (form.apremio_ventilatorio) lines.push(`${form.apremio_ventilatorio}.`);
   if (form.pain_scale) lines.push(`${form.pain_scale}/10.`);
 
   if (form.mecanismo_tos || form.caracteristicas_tos || form.secreciones) {
@@ -78,10 +79,10 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   const ruidoZonaStr = form.ruido_pulmonar_zona;
   const ruidosAgregadosStr = form.ruidos_agregados;
   if (ruidoPulmonarStr || ruidosAgregadosStr) {
-    let auscLine = "Auscultación: Ruido Pulmonar";
+    let auscLine = "Auscultación: ruido pulmonar";
     if (ruidoPulmonarStr) {
       auscLine += ` ${ruidoPulmonarStr.toLowerCase()}`;
-      if (ruidoZonaStr) auscLine += ` en ${ruidoZonaStr.toLowerCase()}`;
+      if (ruidoZonaStr) auscLine += ` ${ruidoZonaStr.toLowerCase()}`;
     }
     if (ruidosAgregadosStr) {
       auscLine += `, ${ruidosAgregadosStr.toLowerCase()}`;
@@ -89,38 +90,40 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`${auscLine}.`);
   }
 
-  if (form.fuerza_muscular || form.rom || form.pto || form.asistencia_transiciones) {
-    const motParts = [];
-    if (form.fuerza_muscular) motParts.push(`Fuerza muscular: ${form.fuerza_muscular}`);
-    if (form.rom) motParts.push(`ROM: ${form.rom}`);
-    if (form.pto) motParts.push(`PTO: ${form.pto}`);
-    if (form.asistencia_transiciones) motParts.push(`Transiciones: ${form.asistencia_transiciones}`);
-    lines.push(`${motParts.join(", ")}.`);
-  }
+  if (form.ikctv) lines.push(`IKCTV ${form.ikctv}.`);
 
-  const neuroParts = [];
-  if (form.tono_muscular) neuroParts.push(`Tono muscular: ${form.tono_muscular}`);
-  if (form.sensibilidad) neuroParts.push(`Sensibilidad: ${form.sensibilidad}`);
-  if (form.observaciones_neurologicas) neuroParts.push(`Obs. neurológicas: ${form.observaciones_neurologicas}`);
-  if (neuroParts.length > 0) lines.push(`${neuroParts.join(", ")}.`);
+  const funcParts = [];
+  if (form.fuerza_muscular) funcParts.push(`Fuerza muscular: ${form.fuerza_muscular}`);
+  if (form.rom) funcParts.push(`ROM: ${form.rom}`);
+  if (form.tono_muscular) funcParts.push(`tono muscular: ${form.tono_muscular}`);
+  if (form.sensibilidad) funcParts.push(`sensibilidad: ${form.sensibilidad}`);
+  if (form.observaciones_neurologicas) funcParts.push(`obs. neurológicas: ${form.observaciones_neurologicas}`);
+  if (funcParts.length > 0) lines.push(`${funcParts.join(", ")}.`);
 
   const techs = techniques && techniques.length > 0 ? techniques : [];
   if (techs.length > 0) {
-    const last = techs[techs.length - 1];
-    const rest = techs.slice(0, -1);
-    const techStr = rest.length > 0 ? `${rest.join(", ")} y ${last}` : last;
-    lines.push(`Se realiza: ${techStr}.`);
+    const techStr = techs.map(t => {
+      const lower = t.toLowerCase();
+      if (t === "Sedente Borde Cama" && form.pto) return `sedente borde cama (PTO: ${form.pto})`;
+      if (t === "Marcha" && form.distancia_recorrido) return `marcha (${form.distancia_recorrido})`;
+      if (t === "Aspiración de secreciones") {
+        let subParts = [];
+        if (form.tipo_aspiracion) subParts.push(form.tipo_aspiracion);
+        if (form.cantidad_aspiracion) subParts.push(`cantidad de secreciones ${form.cantidad_aspiracion}`);
+        return "aspiración de secreciones" + (subParts.length > 0 ? " " + subParts.join(", ") : "");
+      }
+      return lower;
+    });
+    const last = techStr[techStr.length - 1];
+    const rest = techStr.slice(0, -1);
+    const result = rest.length > 0 ? `${rest.join(", ")} y ${last}` : last;
+    lines.push(`Se realiza: ${result}.`);
   }
 
-  const scaleParts = [];
-  if (form.ikctv) scaleParts.push(`IKCTV ${form.ikctv}`);
-  if (form.fss_icu) scaleParts.push(`FSS-ICU ${form.fss_icu}`);
-  if (scaleParts.length > 0) lines.push(`${scaleParts.join(", ")}.`);
+  if (form.asistencia_transiciones) lines.push(`Transiciones: ${form.asistencia_transiciones}.`);
 
-  const quedaParts = [];
-  if (form.evaluacion_estado_general) quedaParts.push(form.evaluacion_estado_general);
-  if (form.posicion_cama) quedaParts.push(form.posicion_cama);
-  if (quedaParts.length > 0) lines.push(`Queda: ${quedaParts.join(", ")}.`);
+  if (form.fss_icu_no_valorable) lines.push(`FSS-ICU: No valorable.`);
+  else if (form.fss_icu) lines.push(`FSS-ICU ${form.fss_icu}.`);
 
   const evalParts = [];
   if (form.tolerancia) evalParts.push(`Tolerancia: ${form.tolerancia}`);
@@ -132,6 +135,19 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.observacion_final && form.observacion_final.trim()) {
     lines.push(`${form.observacion_final.trim()}`);
   }
+
+  const finalVitalParts = [];
+  if (form.fc_final) finalVitalParts.push(`FC final ${form.fc_final} lpm`);
+  if (form.fr_final) finalVitalParts.push(`FR final ${form.fr_final} rpm`);
+  if (form.spo2_final) finalVitalParts.push(`SpO₂ final ${form.spo2_final}%`);
+  if (form.fio2_final) finalVitalParts.push(`FiO₂ final ${form.fio2_final}%`);
+  if (form.flujo_o2_final) finalVitalParts.push(`flujo O₂ final ${form.flujo_o2_final} lpm`);
+  if (finalVitalParts.length > 0) lines.push(`${finalVitalParts.join(", ")}.`);
+
+  const quedaParts = [];
+  if (form.evaluacion_estado_general) quedaParts.push(form.evaluacion_estado_general);
+  if (form.posicion_cama) quedaParts.push(form.posicion_cama);
+  if (quedaParts.length > 0) lines.push(`Queda: ${quedaParts.join(", ")}.`);
 
   const eck = eckScores || latestScale;
   if (eck) {

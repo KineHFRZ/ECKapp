@@ -115,8 +115,8 @@ export default function ReportPreview({ patient, vitals, scales, interventions }
               <td style={tdStyle}>{latestVitals.fio2 || "—"}%</td>
             </tr>
             <tr>
-              <td style={{ ...tdStyle, fontWeight: "bold" }}>Estado general</td>
-              <td style={tdStyle}>{latestVitals.glasgow_score || "—"}</td>
+              <td style={{ ...tdStyle, fontWeight: "bold" }}>GCS</td>
+              <td style={tdStyle}>{latestVitals.gcs || "—"}/15</td>
               <td style={{ ...tdStyle, fontWeight: "bold" }}>EVA</td>
               <td style={tdStyle}>{latestVitals.pain_scale || "—"}/10</td>
             </tr>
@@ -205,12 +205,35 @@ export default function ReportPreview({ patient, vitals, scales, interventions }
                 diastolic_bp: v.diastolic_bp || "", spo2: v.spo2 || "",
                 respiratory_rate: v.respiratory_rate || "", temperature: v.temperature || "",
                 fio2: v.fio2 || "", oxygen_support: v.oxygen_support || "",
-                glasgow_score: v.glasgow_score || "", pain_scale: v.pain_scale || "",
+                pain_scale: v.pain_scale || "",
                 notes: v.notes || "", cnaf_flow: v.cnaf_flow || "",
+                flujo_naricera: v.flujo_naricera || "",
                 ventilatory_mode: v.ventilatory_mode || "",
                 ruido_pulmonar: v.ruido_pulmonar || "",
                 ruido_pulmonar_zona: v.ruido_pulmonar_zona || "",
                 ruidos_agregados: v.ruidos_agregados || "",
+                irox: v.irox || "", pam: v.pam || "", ikctv: v.ikctv || "",
+                gcs: v.gcs || "", sas: v.sas || "", s5q: v.s5q || "",
+                fss_icu: v.fss_icu || "",
+                apreciacion_inicial: v.apreciacion_inicial || "",
+                estado_general: v.estado_general || "",
+                apremio_ventilatorio: v.apremio_ventilatorio || "",
+                mecanismo_tos: v.mecanismo_tos || "",
+                caracteristicas_tos: v.caracteristicas_tos || "",
+                secreciones: v.secreciones || "",
+                fuerza_muscular: v.fuerza_muscular || "",
+                rom: v.rom || "", pto: v.pto || "",
+                asistencia_transiciones: v.asistencia_transiciones || "",
+                evaluacion_estado_general: v.evaluacion_estado_general || "",
+                posicion_cama: v.posicion_cama || "",
+                tolerancia: v.tolerancia || "",
+                porcentaje_fc_rut: v.porcentaje_fc_rut || "",
+                disnea: v.disnea || "", ssf: v.ssf || "",
+                tono_muscular: v.tono_muscular || "",
+                sensibilidad: v.sensibilidad || "",
+                observaciones_neurologicas: v.observaciones_neurologicas || "",
+                observacion_inicial: v.observacion_inicial || "",
+                observacion_final: v.observacion_final || "",
               };
 
               const text = generateClinicalRecord({

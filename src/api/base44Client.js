@@ -1,18 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = 'https://oitbabekfabvgbuqczeu.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdGJhYmVrZmFidmdidXFjemV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5Nzg5NjQsImV4cCI6MjA5NDU1NDk2NH0.tw5cDQL5I9-7QWAwGSPS06o__Mi4U4Div01Zv1gkrRI'
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || SUPABASE_ANON_KEY
-
-let supabase
-try {
-  supabase = createClient(supabaseUrl, supabaseAnonKey)
-  console.log('[base44Client] Supabase client creado OK')
-} catch (e) {
-  console.error('[base44Client] Error creando cliente Supabase:', e)
-}
+const supabase = createClient(
+  'https://oitbabekfabvgbuqczeu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9pdGJhYmVrZmFidmdidXFjemV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5Nzg5NjQsImV4cCI6MjA5NDU1NDk2NH0.tw5cDQL5I9-7QWAwGSPS06o__Mi4U4Div01Zv1gkrRI'
+)
+console.log('[base44Client] Supabase client creado OK')
 
 // localStorage fallback when Supabase not configured
 const STORAGE_KEY_PREFIX = 'eckapp_'
@@ -51,7 +43,10 @@ const handler = {
           }
           if (limit) query = query.limit(limit)
           const { data, error } = await query
-          if (error) throw error
+          if (error) {
+            console.error('[base44Client] Error listing:', name, error)
+            throw error
+          }
           return data || []
         },
         get: async (id) => {
@@ -65,9 +60,11 @@ const handler = {
             .from(name)
             .insert({ ...data, created_date: now, updated_date: now })
             .select()
-            .single()
-          if (error) throw error
-          return result
+          if (error) {
+            console.error('[base44Client] Error creating:', name, error, error.details, error.message, error.hint)
+            throw error
+          }
+          return result?.[0] || { ...data, id: crypto.randomUUID(), created_date: now, updated_date: now }
         },
         update: async (id, data) => {
           const { data: result, error } = await supabase

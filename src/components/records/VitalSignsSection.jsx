@@ -54,7 +54,8 @@ const respiratoriaOptions = [
   "Tos asistida",
   "Tos dirigida",
   "Aspiración de secreciones",
-  "Manejo integral de vía aérea artificial",
+  "Succión subglótica",
+  "Inflado de Cuff",
 ];
 
 const quickObservations = [
@@ -78,10 +79,11 @@ const initialForm = {
   ruido_pulmonar: "", ruido_pulmonar_zona: "", ruidos_agregados: "",
   irox: "", pam: "", ikctv: "", flujo_naricera: "",
   fuerza_muscular: "", rom: "", pto: "", asistencia_transiciones: "", secreciones: "",
-  fss_icu: "",
+  fss_icu: "", fss_icu_no_valorable: false,
   tolerancia: "", porcentaje_fc_rut: "", disnea: "", ssf: "",
   tono_muscular: "", sensibilidad: "", observaciones_neurologicas: "",
-  observacion_inicial: "", observacion_final: "",
+  distancia_recorrido: "", tipo_aspiracion: "", cantidad_aspiracion: "",   observacion_inicial: "", observacion_final: "",
+  fc_final: "", fr_final: "", spo2_final: "", fio2_final: "", flujo_o2_final: "",
 };
 
 function VitalField({ icon: Icon, label, children, color }) {
@@ -161,12 +163,16 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
       setTechniques([]);
       toast.success("Signos vitales registrados");
     },
+    onError: (err) => {
+      console.error("[VitalSignsSection] Error guardando:", err)
+      toast.error("Error al guardar: " + (err?.message || JSON.stringify(err)))
+    },
   });
 
   const handleSave = () => {
     if (!patientId) { toast.error("Selecciona un paciente"); return; }
-    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf"];
-    const stringFields = ["apreciacion_inicial", "estado_general", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas"];
+    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final"];
+    const stringFields = ["apreciacion_inicial", "estado_general", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => { if (form[f]) parsed[f] = Number(form[f]); });
     stringFields.forEach((f) => { if (form[f]) parsed[f] = form[f]; });
@@ -186,6 +192,10 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["scales"] });
       toast.success("Evaluación ECK guardada");
+    },
+    onError: (err) => {
+      console.error("[VitalSignsSection] Error guardando ECK:", err)
+      toast.error("Error al guardar ECK: " + (err?.message || JSON.stringify(err)))
     },
   });
 
@@ -247,8 +257,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               <Select value={form.apremio_ventilatorio} onValueChange={(v) => updateField("apremio_ventilatorio", v)}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Apremio ventilatorio">Apremio ventilatorio</SelectItem>
-                  <SelectItem value="Apremio ventilatorio leve">Apremio ventilatorio leve</SelectItem>
+                  <SelectItem value="Con apremio ventilatorio">Con apremio ventilatorio</SelectItem>
                   <SelectItem value="Sin apremio ventilatorio">Sin apremio ventilatorio</SelectItem>
                 </SelectContent>
               </Select>
@@ -415,63 +424,31 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
         <CardContent className="p-6">
           <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
             <Activity className="w-4 h-4 text-primary" />
-            Evaluación Motora
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <VitalField icon={Activity} label="Fuerza muscular" color="text-primary">
-              <Select value={form.fuerza_muscular} onValueChange={(v) => updateField("fuerza_muscular", v)}>
-                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Alterada">Alterada</SelectItem>
-                  <SelectItem value="Conservada">Conservada</SelectItem>
-                  <SelectItem value="No Evaluable">No Evaluable</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </VitalField>
-                <VitalField icon={Activity} label="ROM" color="text-primary">
-                  <Select value={form.rom} onValueChange={(v) => updateField("rom", v)}>
-                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                    <SelectContent>
-                  <SelectItem value="Alterado">Alterado</SelectItem>
-                  <SelectItem value="Conservado">Conservado</SelectItem>
-                  <SelectItem value="No Evaluable">No Evaluable</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </VitalField>
-                <VitalField icon={Activity} label="PTO" color="text-primary">
-                  <Select value={form.pto} onValueChange={(v) => updateField("pto", v)}>
-                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Negativa">Negativa</SelectItem>
-                      <SelectItem value="Positiva">Positiva</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </VitalField>
-                <VitalField icon={Activity} label="Asistencia en Transiciones" color="text-primary">
-                  <Select value={form.asistencia_transiciones} onValueChange={(v) => updateField("asistencia_transiciones", v)}>
-                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Asistencia leve">Asistencia leve</SelectItem>
-                      <SelectItem value="Asistencia máxima">Asistencia máxima</SelectItem>
-                      <SelectItem value="Asistencia moderada">Asistencia moderada</SelectItem>
-                      <SelectItem value="Asistencia técnica">Asistencia técnica</SelectItem>
-                      <SelectItem value="Sin asistencia">Sin asistencia</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </VitalField>
-              </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/50">
-        <CardContent className="p-6">
-          <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
-            <Brain className="w-4 h-4 text-purple-500" />
-            Evaluación Neurológica
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <VitalField icon={Brain} label="Tono muscular" color="text-purple-500">
-              <Input type="text" value={form.tono_muscular} onChange={(e) => updateField("tono_muscular", e.target.value)} placeholder="Ej: Normal, Hipertónico, Hipotónico..." />
+            Evaluación Funcional
+           </h3>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+             <VitalField icon={Activity} label="Fuerza muscular" color="text-primary">
+               <Select value={form.fuerza_muscular} onValueChange={(v) => updateField("fuerza_muscular", v)}>
+                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                 <SelectContent>
+                   <SelectItem value="Alterada">Alterada</SelectItem>
+                   <SelectItem value="Conservada">Conservada</SelectItem>
+                   <SelectItem value="No Evaluable">No Evaluable</SelectItem>
+                     </SelectContent>
+                   </Select>
+                 </VitalField>
+                 <VitalField icon={Activity} label="ROM" color="text-primary">
+                   <Select value={form.rom} onValueChange={(v) => updateField("rom", v)}>
+                     <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                     <SelectContent>
+                   <SelectItem value="Alterado">Alterado</SelectItem>
+                   <SelectItem value="Conservado">Conservado</SelectItem>
+                   <SelectItem value="No Evaluable">No Evaluable</SelectItem>
+                     </SelectContent>
+                   </Select>
+                 </VitalField>
+                 <VitalField icon={Brain} label="Tono muscular" color="text-purple-500">
+               <Input type="text" value={form.tono_muscular} onChange={(e) => updateField("tono_muscular", e.target.value)} placeholder="Ej: Normal, Hipertónico, Hipotónico..." />
             </VitalField>
             <VitalField icon={Brain} label="Sensibilidad" color="text-purple-500">
               <Select value={form.sensibilidad} onValueChange={(v) => updateField("sensibilidad", v)}>
@@ -487,10 +464,10 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
             <div className="md:col-span-2">
               <VitalField icon={FileText} label="Observaciones" color="text-purple-500">
                 <Textarea value={form.observaciones_neurologicas} onChange={(e) => updateField("observaciones_neurologicas", e.target.value)} placeholder="Observaciones neurológicas..." className="min-h-[60px]" />
-              </VitalField>
+             </VitalField>
+           </div>
             </div>
-          </div>
-        </CardContent>
+         </CardContent>
       </Card>
 
       <Card className="border-border/50">
@@ -504,7 +481,13 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               <Input type="number" value={form.ikctv} onChange={(e) => updateField("ikctv", e.target.value)} placeholder="0-24" />
             </VitalField>
             <VitalField icon={Activity} label="FSS - ICU" color="text-primary">
-              <Input type="number" value={form.fss_icu} onChange={(e) => updateField("fss_icu", e.target.value)} placeholder="0-35" min="0" max="35" />
+              <div className="space-y-2">
+                <Input type="number" value={form.fss_icu} onChange={(e) => updateField("fss_icu", e.target.value)} placeholder="0-35" min="0" max="35" disabled={form.fss_icu_no_valorable} />
+                <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                  <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) updateField("fss_icu", ""); }} className="accent-primary" />
+                  No valorable
+                </label>
+              </div>
             </VitalField>
           </div>
         </CardContent>
@@ -521,10 +504,30 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               <p className="text-xs font-semibold text-primary mb-3 uppercase tracking-wide">Movilidad Funcional</p>
               <div className="space-y-2">
                 {movilidadOptions.map((tech) => (
-                  <label key={tech} className="flex items-start gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/40 cursor-pointer transition-colors">
-                    <input type="checkbox" checked={techniques.includes(tech)} onChange={() => toggleTechnique(tech)} className="mt-0.5 accent-primary" />
-                    <span className="text-sm leading-snug">{tech}</span>
-                  </label>
+                  <div key={tech}>
+                    <label className="flex items-start gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/40 cursor-pointer transition-colors">
+                      <input type="checkbox" checked={techniques.includes(tech)} onChange={() => toggleTechnique(tech)} className="mt-0.5 accent-primary" />
+                      <span className="text-sm leading-snug">{tech}</span>
+                    </label>
+                    {tech === "Sedente Borde Cama" && techniques.includes("Sedente Borde Cama") && (
+                      <div className="ml-8 mb-3 space-y-1">
+                        <Label className="text-xs text-muted-foreground">PTO</Label>
+                        <Select value={form.pto} onValueChange={(v) => updateField("pto", v)}>
+                          <SelectTrigger className="w-full text-sm"><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Negativa">Negativa</SelectItem>
+                            <SelectItem value="Positiva">Positiva</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    {tech === "Marcha" && techniques.includes("Marcha") && (
+                      <div className="ml-8 mb-3 space-y-1">
+                        <Label className="text-xs text-muted-foreground">Distancia o recorrido</Label>
+                        <Input type="text" value={form.distancia_recorrido} onChange={(e) => updateField("distancia_recorrido", e.target.value)} placeholder="Ej: 50 metros" className="w-full text-sm" />
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -532,13 +535,65 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               <p className="text-xs font-semibold text-teal-600 mb-3 uppercase tracking-wide">Terapia Respiratoria</p>
               <div className="space-y-2">
                 {respiratoriaOptions.map((tech) => (
-                  <label key={tech} className="flex items-start gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/40 cursor-pointer transition-colors">
-                    <input type="checkbox" checked={techniques.includes(tech)} onChange={() => toggleTechnique(tech)} className="mt-0.5 accent-primary" />
-                    <span className="text-sm leading-snug">{tech}</span>
-                  </label>
+                  <div key={tech}>
+                    <label className="flex items-start gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/40 cursor-pointer transition-colors">
+                      <input type="checkbox" checked={techniques.includes(tech)} onChange={() => toggleTechnique(tech)} className="mt-0.5 accent-primary" />
+                      <span className="text-sm leading-snug">{tech}</span>
+                    </label>
+                    {tech === "Aspiración de secreciones" && techniques.includes("Aspiración de secreciones") && (
+                      <div className="ml-8 mb-3 space-y-2">
+                        <div className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">Tipo de aspiración</Label>
+                          <Select value={form.tipo_aspiracion} onValueChange={(v) => updateField("tipo_aspiracion", v)}>
+                            <SelectTrigger className="w-full text-sm"><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Orofaríngea">Orofaríngea</SelectItem>
+                              <SelectItem value="Nasofaríngea">Nasofaríngea</SelectItem>
+                              <SelectItem value="Nasotraqueal">Nasotraqueal</SelectItem>
+                              <SelectItem value="Orotraqueal">Orotraqueal</SelectItem>
+                              <SelectItem value="Endotraqueal">Endotraqueal</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">Cantidad</Label>
+                          <Select value={form.cantidad_aspiracion} onValueChange={(v) => updateField("cantidad_aspiracion", v)}>
+                            <SelectTrigger className="w-full text-sm"><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Escasa">Escasa</SelectItem>
+                              <SelectItem value="Moderada">Moderada</SelectItem>
+                              <SelectItem value="Abundante">Abundante</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/50">
+        <CardContent className="p-6">
+          <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+            <Activity className="w-4 h-4 text-primary" />
+            Asistencia en Transiciones</h3>
+          <div className="max-w-sm">
+            <VitalField icon={Activity} label="Transiciones" color="text-primary">
+              <Select value={form.asistencia_transiciones} onValueChange={(v) => updateField("asistencia_transiciones", v)}>
+                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Asistencia leve">Asistencia leve</SelectItem>
+                  <SelectItem value="Asistencia máxima">Asistencia máxima</SelectItem>
+                  <SelectItem value="Asistencia moderada">Asistencia moderada</SelectItem>
+                  <SelectItem value="Asistencia técnica">Asistencia técnica</SelectItem>
+                  <SelectItem value="Sin asistencia">Sin asistencia</SelectItem>
+                </SelectContent>
+              </Select>
+            </VitalField>
           </div>
         </CardContent>
       </Card>
@@ -604,8 +659,28 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
 
       <Card className="border-border/50">
         <CardContent className="p-6 space-y-4">
+          <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+            <Heart className="w-4 h-4 text-primary" />
+            Observación Final
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <VitalField icon={Heart} label="FC final (lpm)" color="text-red-500">
+              <Input type="number" value={form.fc_final} onChange={(e) => updateField("fc_final", e.target.value)} placeholder="60-100" />
+            </VitalField>
+            <VitalField icon={Wind} label="FR final (rpm)" color="text-teal-500">
+              <Input type="number" value={form.fr_final} onChange={(e) => updateField("fr_final", e.target.value)} placeholder="12-20" />
+            </VitalField>
+            <VitalField icon={Droplets} label="SpO₂ final (%)" color="text-sky-500">
+              <Input type="number" value={form.spo2_final} onChange={(e) => updateField("spo2_final", e.target.value)} placeholder="95-100" />
+            </VitalField>
+            <VitalField icon={Wind} label="FiO₂ final (%)" color="text-teal-500">
+              <Input type="number" value={form.fio2_final} onChange={(e) => updateField("fio2_final", e.target.value)} placeholder="21" />
+            </VitalField>
+            <VitalField icon={Wind} label="Flujo O₂ final (lpm)" color="text-teal-500">
+              <Input type="number" value={form.flujo_o2_final} onChange={(e) => updateField("flujo_o2_final", e.target.value)} placeholder="Ej: 3" />
+            </VitalField>
+          </div>
           <div className="space-y-1.5">
-            <Label>Observación Final</Label>
             <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
           </div>
         </CardContent>
