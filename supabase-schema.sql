@@ -1,0 +1,139 @@
+-- ============================================================
+-- Esquema para ECKapp en Supabase
+-- Ejecuta esto en el SQL Editor de tu proyecto Supabase
+-- ============================================================
+
+-- Extensión para UUID auto-generados
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- ============================================================
+-- Tabla: Patient
+-- ============================================================
+CREATE TABLE public."Patient" (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  full_name TEXT NOT NULL,
+  rut TEXT,
+  age INTEGER,
+  gender TEXT,
+  diagnosis TEXT,
+  bed_number TEXT,
+  service TEXT,
+  admission_date TEXT,
+  attending_physician TEXT,
+  created_date TIMESTAMPTZ DEFAULT NOW(),
+  updated_date TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- Tabla: VitalSigns
+-- ============================================================
+CREATE TABLE public."VitalSigns" (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  patient_id TEXT NOT NULL,
+  record_date TIMESTAMPTZ DEFAULT NOW(),
+  heart_rate NUMERIC,
+  systolic_bp NUMERIC,
+  diastolic_bp NUMERIC,
+  spo2 NUMERIC,
+  respiratory_rate NUMERIC,
+  temperature NUMERIC,
+  fio2 NUMERIC,
+  oxygen_support TEXT,
+  cnaf_flow NUMERIC,
+  irox NUMERIC,
+  pain_scale NUMERIC,
+  pam NUMERIC,
+  ikctv NUMERIC,
+  fuerza_muscular TEXT,
+  rom TEXT,
+  pto TEXT,
+  asistencia_transiciones TEXT,
+  flujo_naricera NUMERIC,
+  observacion_inicial TEXT,
+  observacion_final TEXT,
+  apreciacion_inicial TEXT,
+  estado_general TEXT,
+  ventilatory_mode TEXT,
+  apremio_ventilatorio TEXT,
+  ruido_pulmonar TEXT,
+  ruido_pulmonar_zona TEXT,
+  ruidos_agregados TEXT,
+  mecanismo_tos TEXT,
+  caracteristicas_tos TEXT,
+  secreciones TEXT,
+  evaluacion_estado_general TEXT,
+  posicion_cama TEXT,
+  techniques JSONB DEFAULT '[]'::jsonb,
+  notes TEXT,
+  created_date TIMESTAMPTZ DEFAULT NOW(),
+  updated_date TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- Tabla: ScaleAssessment
+-- ============================================================
+CREATE TABLE public."ScaleAssessment" (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  patient_id TEXT NOT NULL,
+  assessment_date TIMESTAMPTZ DEFAULT NOW(),
+  respiratory_dimension NUMERIC,
+  motor_dimension NUMERIC,
+  neurological_dimension NUMERIC,
+  cardiovascular_dimension NUMERIC,
+  pain_dimension NUMERIC,
+  functional_dimension NUMERIC,
+  total_score NUMERIC,
+  care_frequency NUMERIC,
+  risk_level TEXT,
+  notes TEXT,
+  created_date TIMESTAMPTZ DEFAULT NOW(),
+  updated_date TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- Tabla: Intervention
+-- ============================================================
+CREATE TABLE public."Intervention" (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  patient_id TEXT NOT NULL,
+  intervention_date TIMESTAMPTZ DEFAULT NOW(),
+  intervention_type TEXT NOT NULL,
+  techniques JSONB DEFAULT '[]'::jsonb,
+  duration_minutes NUMERIC,
+  patient_tolerance TEXT,
+  pre_intervention_notes TEXT,
+  post_intervention_notes TEXT,
+  objectives TEXT,
+  plan TEXT,
+  notes TEXT,
+  created_date TIMESTAMPTZ DEFAULT NOW(),
+  updated_date TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- Índices para búsquedas rápidas
+-- ============================================================
+CREATE INDEX idx_vitalsigns_patient ON public."VitalSigns" (patient_id);
+CREATE INDEX idx_vitalsigns_date ON public."VitalSigns" (created_date DESC);
+CREATE INDEX idx_scaleassessment_patient ON public."ScaleAssessment" (patient_id);
+CREATE INDEX idx_intervention_patient ON public."Intervention" (patient_id);
+
+-- ============================================================
+-- Row Level Security (RLS) — acceso público sin autenticación
+-- ============================================================
+ALTER TABLE public."Patient" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."VitalSigns" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."ScaleAssessment" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Intervention" ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Acceso público Patient" ON public."Patient"
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Acceso público VitalSigns" ON public."VitalSigns"
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Acceso público ScaleAssessment" ON public."ScaleAssessment"
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Acceso público Intervention" ON public."Intervention"
+  FOR ALL USING (true) WITH CHECK (true);

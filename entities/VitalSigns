@@ -1,0 +1,176 @@
+{
+  "name": "VitalSigns",
+  "type": "object",
+  "properties": {
+    "patient_id": {
+      "type": "string",
+      "description": "ID del paciente"
+    },
+    "record_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha y hora del registro"
+    },
+    "heart_rate": {
+      "type": "number",
+      "description": "Frecuencia card\u00edaca (lpm)"
+    },
+    "systolic_bp": {
+      "type": "number",
+      "description": "Presi\u00f3n arterial sist\u00f3lica (mmHg)"
+    },
+    "diastolic_bp": {
+      "type": "number",
+      "description": "Presi\u00f3n arterial diast\u00f3lica (mmHg)"
+    },
+    "spo2": {
+      "type": "number",
+      "description": "Saturaci\u00f3n de ox\u00edgeno (%)"
+    },
+    "respiratory_rate": {
+      "type": "number",
+      "description": "Frecuencia respiratoria (rpm)"
+    },
+    "temperature": {
+      "type": "number",
+      "description": "Temperatura (\u00b0C)"
+    },
+    "fio2": {
+      "type": "number",
+      "description": "FiO2 (%)"
+    },
+    "oxygen_support": {
+      "type": "string",
+      "enum": [
+        "ambiente",
+        "naricera",
+        "mascarilla_simple",
+        "mascarilla_reservorio",
+        "venturi",
+        "cnaf",
+        "vmni",
+        "vmi",
+        "tqt_hme"
+      ],
+      "description": "Soporte de ox\u00edgeno"
+    },
+    "cnaf_flow": {
+      "type": "number",
+      "description": "Flujo CNAF (lpm)"
+    },
+    "irox": {
+      "type": "number",
+      "description": "Índice ROX (SpO2/FiO2/FR)"
+    },
+    "pain_scale": {
+      "type": "number",
+      "description": "Escala de dolor EVA (0-10)"
+    },
+    "pam": {
+      "type": "number",
+      "description": "Presi\u00f3n Arterial Media (mmHg)"
+    },
+    "ikctv": {
+      "type": "number",
+      "description": "\u00cdndice Kin\u00e9sico de Carga del Trabajo Ventilatorio"
+    },
+    "fuerza_muscular": {
+      "type": "string",
+      "enum": ["Conservada", "Alterada", "No Evaluable"],
+      "description": "Evaluaci\u00f3n de fuerza muscular"
+    },
+    "rom": {
+      "type": "string",
+      "enum": ["Conservado(a)", "Alterado(a)", "No Evaluable"],
+      "description": "Evaluaci\u00f3n de ROM"
+    },
+    "pto": {
+      "type": "string",
+      "enum": ["Positiva", "Negativa"],
+      "description": "Prueba de PTO"
+    },
+    "asistencia_transiciones": {
+      "type": "string",
+      "description": "Asistencia en transiciones"
+    },
+    "flujo_naricera": {
+      "type": "number",
+      "description": "Flujo de O2 (lpm)"
+    },
+    "observacion_inicial": {
+      "type": "string",
+      "description": "Observaci\u00f3n inicial"
+    },
+    "observacion_final": {
+      "type": "string",
+      "description": "Observaci\u00f3n final"
+    },
+    "apreciacion_inicial": {
+      "type": "string",
+      "enum": ["Vigil", "Coopera parcialmente", "Contenido(a) de extremidades"],
+      "description": "Apreciaci\u00f3n inicial del paciente"
+    },
+    "apremio_ventilatorio": {
+      "type": "string",
+      "enum": ["Sin apremio ventilatorio", "Apremio ventilatorio leve", "Apremio ventilatorio"],
+      "description": "Nivel de apremio ventilatorio"
+    },
+    "ruido_pulmonar": {
+      "type": "string",
+      "enum": ["Presente", "Disminuido", "Abolido"],
+      "description": "Ruido pulmonar"
+    },
+    "ruido_pulmonar_zona": {
+      "type": "string",
+      "enum": ["\u00c1pices", "Bibasal", "Bilateral", "Anterior", "Posterior"],
+      "description": "Zona de ruido pulmonar"
+    },
+    "ruidos_agregados": {
+      "type": "string",
+      "enum": ["Sin Ruidos Agregados", "Crepitos", "Sibilancias", "Roncus", "Estertor"],
+      "description": "Ruidos agregados"
+    },
+    "tecnica_movilidad": {
+      "type": "string",
+      "description": "T\u00e9cnica de movilidad funcional"
+    },
+    "tecnica_respiratoria": {
+      "type": "string",
+      "description": "T\u00e9cnica de terapia respiratoria"
+    },
+    "mecanismo_tos": {
+      "type": "string",
+      "enum": ["Efectiva", "Alterada en fase inspiratoria", "Alterada en fase compresiva", "Alterada en fase expulsiva", "No evaluable"],
+      "description": "Mecanismo de tos"
+    },
+    "caracteristicas_tos": {
+      "type": "string",
+      "enum": ["Productiva", "No productiva"],
+      "description": "Caracter\u00edsticas de la tos"
+    },
+    "evaluacion_estado_general": {
+      "type": "string",
+      "enum": ["Tranquil(o/a)", "Agitado(a)", "Contenido(a)"],
+      "description": "Estado general en evaluaci\u00f3n final"
+    },
+    "posicion_cama": {
+      "type": "string",
+      "enum": ["Acostado(a) en cama 30\u00b0", "Sedente borde cama", "Sedente en silla/sill\u00f3n"],
+      "description": "Posici\u00f3n en cama"
+    },
+    "techniques": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Intervenciones kin\u00e9sicas realizadas"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observaciones"
+    }
+  },
+  "required": [
+    "patient_id"
+  ]
+}

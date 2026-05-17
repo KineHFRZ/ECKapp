@@ -1,0 +1,70 @@
+{
+  "name": "Intervention",
+  "type": "object",
+  "properties": {
+    "patient_id": {
+      "type": "string",
+      "description": "ID del paciente"
+    },
+    "intervention_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha y hora de intervenci\u00f3n"
+    },
+    "intervention_type": {
+      "type": "string",
+      "enum": [
+        "respiratoria",
+        "motora",
+        "neurologica",
+        "cardiovascular",
+        "musculoesqueletica"
+      ],
+      "description": "Tipo de intervenci\u00f3n"
+    },
+    "techniques": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "T\u00e9cnicas aplicadas"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Duraci\u00f3n en minutos"
+    },
+    "patient_tolerance": {
+      "type": "string",
+      "enum": [
+        "buena",
+        "regular",
+        "mala"
+      ],
+      "description": "Tolerancia del paciente"
+    },
+    "pre_intervention_notes": {
+      "type": "string",
+      "description": "Estado previo a la intervenci\u00f3n"
+    },
+    "post_intervention_notes": {
+      "type": "string",
+      "description": "Estado posterior a la intervenci\u00f3n"
+    },
+    "objectives": {
+      "type": "string",
+      "description": "Objetivos de la intervenci\u00f3n"
+    },
+    "plan": {
+      "type": "string",
+      "description": "Plan kin\u00e9sico"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observaciones adicionales"
+    }
+  },
+  "required": [
+    "patient_id",
+    "intervention_type"
+  ]
+}

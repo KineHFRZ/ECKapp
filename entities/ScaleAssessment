@@ -1,0 +1,64 @@
+{
+  "name": "ScaleAssessment",
+  "type": "object",
+  "properties": {
+    "patient_id": {
+      "type": "string",
+      "description": "ID del paciente"
+    },
+    "assessment_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de evaluaci\u00f3n"
+    },
+    "respiratory_dimension": {
+      "type": "number",
+      "description": "Dimensi\u00f3n respiratoria (0-4)"
+    },
+    "motor_dimension": {
+      "type": "number",
+      "description": "Dimensi\u00f3n motora (0-4)"
+    },
+    "neurological_dimension": {
+      "type": "number",
+      "description": "Dimensi\u00f3n neurol\u00f3gica (0-4)"
+    },
+    "cardiovascular_dimension": {
+      "type": "number",
+      "description": "Dimensi\u00f3n cardiovascular (0-4)"
+    },
+    "pain_dimension": {
+      "type": "number",
+      "description": "Dimensi\u00f3n dolor (0-4)"
+    },
+    "functional_dimension": {
+      "type": "number",
+      "description": "Dimensi\u00f3n funcional (0-4)"
+    },
+    "total_score": {
+      "type": "number",
+      "description": "Puntaje total"
+    },
+    "care_frequency": {
+      "type": "number",
+      "description": "N\u00famero de atenciones en 24 horas"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "bajo",
+        "moderado",
+        "alto",
+        "critico"
+      ],
+      "description": "Nivel de riesgo"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observaciones"
+    }
+  },
+  "required": [
+    "patient_id"
+  ]
+}

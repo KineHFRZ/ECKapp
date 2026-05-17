@@ -1,0 +1,92 @@
+{
+  "name": "Patient",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "description": "Nombre completo del paciente"
+    },
+    "rut": {
+      "type": "string",
+      "description": "RUT del paciente"
+    },
+    "age": {
+      "type": "number",
+      "description": "Edad del paciente"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "masculino",
+        "femenino",
+        "otro"
+      ],
+      "description": "Sexo del paciente"
+    },
+    "diagnosis": {
+      "type": "string",
+      "description": "Diagn\u00f3stico m\u00e9dico"
+    },
+    "bed_number": {
+      "type": "string",
+      "description": "N\u00famero de cama"
+    },
+    "service": {
+      "type": "string",
+      "description": "Servicio hospitalario"
+    },
+    "admission_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de ingreso"
+    },
+    "attending_physician": {
+      "type": "string",
+      "description": "M\u00e9dico tratante"
+    }
+  },
+  "required": [
+    "full_name"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
