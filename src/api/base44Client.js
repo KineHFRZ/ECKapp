@@ -40,7 +40,9 @@ function makeEntity(data, id) {
 
 const handler = {
   get(_, name) {
+    console.log('[handler get]', name, 'supabase?', !!supabase)
     if (supabase) {
+      console.log('[handler] usando Supabase para', name)
       return {
         list: async (sort, limit) => {
           let query = supabase.from(name).select('*')
