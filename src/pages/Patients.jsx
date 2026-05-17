@@ -32,7 +32,10 @@ export default function Patients() {
   });
 
   const createMut = useMutation({
-    mutationFn: (data) => db.entities.Patient.create(data),
+    mutationFn: (data) => {
+      console.log('[Patients] mutationFn ejecutandose', data?.full_name)
+      return db.entities.Patient.create(data)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["patients"] });
       setOpen(false);
@@ -59,9 +62,21 @@ export default function Patients() {
     createMut.mutate({ ...form, age: form.age ? Number(form.age) : undefined });
   };
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     console.log('[Patients] button click directo')
-    handleSubmit(null)
+    const payload = { ...form, age: form.age ? Number(form.age) : undefined }
+    console.log('[Patients] llamando db.entities.Patient.create directo...')
+    try {
+      const result = await db.entities.Patient.create(payload)
+      console.log('[Patients] create exitoso:', result?.id)
+      toast.success("Paciente creado")
+      setOpen(false)
+      setForm(emptyPatient)
+      queryClient.invalidateQueries({ queryKey: ["patients"] })
+    } catch (err) {
+      console.error('[Patients] error create:', err)
+      toast.error("Error: " + (err.message || err))
+    }
   };
 
   const updateField = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
