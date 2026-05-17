@@ -28,7 +28,16 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.apreciacion_inicial) {
     const aprecParts = [`Se encuentra ${form.apreciacion_inicial}`];
     if (form.estado_general) aprecParts.push(form.estado_general);
+    if (form.gcs) aprecParts.push(`GCS ${form.gcs}/15`);
+    if (form.sas) aprecParts.push(`SAS ${form.sas}/7`);
+    if (form.s5q) aprecParts.push(`S5Q ${form.s5q}/5`);
     lines.push(`${aprecParts.join(", ")}.`);
+  } else {
+    const neuroParts = [];
+    if (form.gcs) neuroParts.push(`GCS ${form.gcs}/15`);
+    if (form.sas) neuroParts.push(`SAS ${form.sas}/7`);
+    if (form.s5q) neuroParts.push(`S5Q ${form.s5q}/5`);
+    if (neuroParts.length > 0) lines.push(`${neuroParts.join(", ")}.`);
   }
 
   if (form.observacion_inicial && form.observacion_inicial.trim()) {
@@ -62,7 +71,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     let tosLine = "Evaluación de la tos:";
     if (form.mecanismo_tos) tosLine += ` ${form.mecanismo_tos}`;
     if (form.caracteristicas_tos) tosLine += `, ${form.caracteristicas_tos}`;
-    if (form.secreciones) tosLine += `, ${form.secreciones}`;
+    if (form.secreciones) tosLine += `, secreciones ${form.secreciones}`;
     lines.push(`${tosLine}.`);
   }
 
@@ -90,6 +99,12 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`${motParts.join(", ")}.`);
   }
 
+  const neuroParts = [];
+  if (form.tono_muscular) neuroParts.push(`Tono muscular: ${form.tono_muscular}`);
+  if (form.sensibilidad) neuroParts.push(`Sensibilidad: ${form.sensibilidad}`);
+  if (form.observaciones_neurologicas) neuroParts.push(`Obs. neurológicas: ${form.observaciones_neurologicas}`);
+  if (neuroParts.length > 0) lines.push(`${neuroParts.join(", ")}.`);
+
   const techs = techniques && techniques.length > 0 ? techniques : [];
   if (techs.length > 0) {
     const last = techs[techs.length - 1];
@@ -102,6 +117,17 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.evaluacion_estado_general) quedaParts.push(form.evaluacion_estado_general);
   if (form.posicion_cama) quedaParts.push(form.posicion_cama);
   if (quedaParts.length > 0) lines.push(`Queda: ${quedaParts.join(", ")}.`);
+
+  const evalParts = [];
+  if (form.tolerancia) evalParts.push(`Tolerancia: ${form.tolerancia}`);
+  if (form.porcentaje_fc_rut) evalParts.push(`%FCRut: ${form.porcentaje_fc_rut}%`);
+  if (form.disnea) evalParts.push(`Disnea: ${form.disnea}/10`);
+  if (form.ssf) evalParts.push(`SSF: ${form.ssf}/10`);
+  if (evalParts.length > 0) lines.push(`${evalParts.join(", ")}.`);
+
+  if (form.observacion_final && form.observacion_final.trim()) {
+    lines.push(`${form.observacion_final.trim()}`);
+  }
 
   const eck = eckScores || latestScale;
   if (eck) {
@@ -121,10 +147,6 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`  - Movilidad Funcional: ${m != null ? m : "—"}/3`);
     lines.push(`  - Puntaje Total: ${total}/12 → ${result.label}`);
     lines.push(`  - Atenciones requeridas: ${result.frequency}${result.level === "severa" ? " o más" : ""} en 24 hrs`);
-  }
-
-  if (form.observacion_final && form.observacion_final.trim()) {
-    lines.push(`${form.observacion_final.trim()}`);
   }
 
   lines.push("Atención finalizada sin incidentes.");

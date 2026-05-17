@@ -9,13 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Heart, Wind, Droplets, Brain, Activity, Stethoscope, Copy, Check, ClipboardList } from "lucide-react";
+import { Save, Heart, Wind, Droplets, Brain, Activity, Stethoscope, Copy, Check, ClipboardList, FileText } from "lucide-react";
 import { getResult } from "@/components/scales/ScaleResult";
 import ScaleDimension from "@/components/scales/ScaleDimension";
 import { generateClinicalRecord } from "@/lib/clinicalRecord";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const oxygenOptions = [
   { value: "ambiente", label: "Aire ambiente" },
@@ -78,6 +79,9 @@ const initialForm = {
   ruido_pulmonar: "", ruido_pulmonar_zona: "", ruidos_agregados: "",
   irox: "", pam: "", ikctv: "", flujo_naricera: "",
   fuerza_muscular: "", rom: "", pto: "", asistencia_transiciones: "", secreciones: "",
+  fss_icu: "",
+  tolerancia: "", porcentaje_fc_rut: "", disnea: "", ssf: "",
+  tono_muscular: "", sensibilidad: "", observaciones_neurologicas: "",
   observacion_inicial: "", observacion_final: "",
 };
 
@@ -162,8 +166,8 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
 
   const handleSave = () => {
     if (!patientId) { toast.error("Selecciona un paciente"); return; }
-    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam"];
-    const stringFields = ["apreciacion_inicial", "estado_general", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "observacion_inicial", "observacion_final"];
+    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf"];
+    const stringFields = ["apreciacion_inicial", "estado_general", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => { if (form[f]) parsed[f] = Number(form[f]); });
     stringFields.forEach((f) => { if (form[f]) parsed[f] = form[f]; });
@@ -177,6 +181,30 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
     generateClinicalRecord({ patient, form, techniques, eckScores, latestScale, now: new Date() }),
     [patient, form, techniques, eckScores, latestScale]
   );
+
+  const saveEckMut = useMutation({
+    mutationFn: (data) => db.entities.ScaleAssessment.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["scales"] });
+      toast.success("Evaluación ECK guardada");
+    },
+  });
+
+  const handleSaveEck = () => {
+    if (!patientId) { toast.error("Selecciona un paciente"); return; }
+    const allFilled = Object.values(eckScores).every((v) => v !== null);
+    if (!allFilled) { toast.error("Completa todas las dimensiones ECK"); return; }
+    const totalScore = Object.values(eckScores).reduce((s, v) => s + (v ?? 0), 0);
+    const result = getResult(totalScore);
+    saveEckMut.mutate({
+      patient_id: patientId,
+      assessment_date: new Date().toISOString(),
+      ...eckScores,
+      total_score: totalScore,
+      care_frequency: result.frequency,
+      assistance_level: result.level,
+    });
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(clinicalRecord);
@@ -229,6 +257,18 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
             <VitalField icon={Activity} label="EVA Dolor (0-10)" color="text-amber-500">
               <Input type="number" min="0" max="10" value={form.pain_scale} onChange={(e) => updateField("pain_scale", e.target.value)} placeholder="0-10" />
             </VitalField>
+            <VitalField icon={Brain} label="GCS (3-15)" color="text-purple-500">
+              <Input type="number" min="3" max="15" value={form.gcs} onChange={(e) => updateField("gcs", e.target.value)} placeholder="15" />
+            </VitalField>
+            <VitalField icon={Brain} label="SAS (1-7)" color="text-purple-500">
+              <Input type="number" min="1" max="7" value={form.sas} onChange={(e) => updateField("sas", e.target.value)} placeholder="4" />
+            </VitalField>
+            <VitalField icon={Brain} label="S5Q" color="text-purple-500">
+              <div className="flex items-center gap-1">
+                <Input type="number" min="0" max="5" value={form.s5q} onChange={(e) => updateField("s5q", e.target.value)} placeholder="0" className="w-20" />
+                <span className="text-sm text-muted-foreground">/5</span>
+              </div>
+            </VitalField>
           </div>
           <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
             <Label>Observación Inicial</Label>
@@ -271,9 +311,6 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
             </VitalField>
             <VitalField icon={Wind} label="FiO₂ (%)" color="text-teal-500">
               <Input type="number" value={form.fio2} onChange={(e) => updateField("fio2", e.target.value)} placeholder="21" />
-            </VitalField>
-            <VitalField icon={Wind} label="IKCTV" color="text-teal-500">
-              <Input type="number" value={form.ikctv} onChange={(e) => updateField("ikctv", e.target.value)} placeholder="0-24" />
             </VitalField>
             <VitalField icon={Wind} label="Soporte O₂" color="text-teal-500">
               <Select value={form.oxygen_support} onValueChange={(v) => updateField("oxygen_support", v)}>
@@ -429,6 +466,53 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
 
       <Card className="border-border/50">
         <CardContent className="p-6">
+          <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+            <Brain className="w-4 h-4 text-purple-500" />
+            Evaluación Neurológica
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <VitalField icon={Brain} label="Tono muscular" color="text-purple-500">
+              <Input type="text" value={form.tono_muscular} onChange={(e) => updateField("tono_muscular", e.target.value)} placeholder="Ej: Normal, Hipertónico, Hipotónico..." />
+            </VitalField>
+            <VitalField icon={Brain} label="Sensibilidad" color="text-purple-500">
+              <Select value={form.sensibilidad} onValueChange={(v) => updateField("sensibilidad", v)}>
+                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Alterada">Alterada</SelectItem>
+                  <SelectItem value="Ausente">Ausente</SelectItem>
+                  <SelectItem value="Conservada">Conservada</SelectItem>
+                  <SelectItem value="No evaluable">No evaluable</SelectItem>
+                </SelectContent>
+              </Select>
+            </VitalField>
+            <div className="md:col-span-2">
+              <VitalField icon={FileText} label="Observaciones" color="text-purple-500">
+                <Textarea value={form.observaciones_neurologicas} onChange={(e) => updateField("observaciones_neurologicas", e.target.value)} placeholder="Observaciones neurológicas..." className="min-h-[60px]" />
+              </VitalField>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/50">
+        <CardContent className="p-6">
+          <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
+            <Activity className="w-4 h-4 text-primary" />
+            Escalas de Evaluación
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <VitalField icon={Wind} label="IKCTV" color="text-teal-500">
+              <Input type="number" value={form.ikctv} onChange={(e) => updateField("ikctv", e.target.value)} placeholder="0-24" />
+            </VitalField>
+            <VitalField icon={Activity} label="FSS - ICU" color="text-primary">
+              <Input type="number" value={form.fss_icu} onChange={(e) => updateField("fss_icu", e.target.value)} placeholder="0-35" min="0" max="35" />
+            </VitalField>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/50">
+        <CardContent className="p-6">
           <h3 className="font-semibold mb-1 text-foreground flex items-center gap-2">
             <Stethoscope className="w-4 h-4 text-primary" /> Intervenciones Kinésicas
           </h3>
@@ -487,6 +571,43 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                 </SelectContent>
               </Select>
             </VitalField>
+            <VitalField icon={Activity} label="Tolerancia" color="text-primary">
+              <Select value={form.tolerancia} onValueChange={(v) => updateField("tolerancia", v)}>
+                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Buena">Buena</SelectItem>
+                  <SelectItem value="Regular">Regular</SelectItem>
+                  <SelectItem value="Mala">Mala</SelectItem>
+                </SelectContent>
+              </Select>
+            </VitalField>
+            <VitalField icon={Activity} label="%FCRut" color="text-primary">
+              <div className="flex items-center gap-1">
+                <Input type="number" min="0" max="100" value={form.porcentaje_fc_rut} onChange={(e) => updateField("porcentaje_fc_rut", e.target.value)} placeholder="0" className="w-20" />
+                <span className="text-sm text-muted-foreground">%</span>
+              </div>
+            </VitalField>
+            <VitalField icon={Activity} label="Disnea" color="text-primary">
+              <div className="flex items-center gap-1">
+                <Input type="number" min="0" max="10" value={form.disnea} onChange={(e) => updateField("disnea", e.target.value)} placeholder="0" className="w-20" />
+                <span className="text-sm text-muted-foreground">/10</span>
+              </div>
+            </VitalField>
+            <VitalField icon={Activity} label="SSF" color="text-primary">
+              <div className="flex items-center gap-1">
+                <Input type="number" min="0" max="10" value={form.ssf} onChange={(e) => updateField("ssf", e.target.value)} placeholder="0" className="w-20" />
+                <span className="text-sm text-muted-foreground">/10</span>
+              </div>
+            </VitalField>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/50">
+        <CardContent className="p-6 space-y-4">
+          <div className="space-y-1.5">
+            <Label>Observación Final</Label>
+            <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
           </div>
         </CardContent>
       </Card>
@@ -519,21 +640,59 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               <span className="font-black text-red-700 text-right text-xs leading-tight">≥3 atenciones<br/>/24 hrs</span>
             </div>
           </div>
+
+          <div className="pt-4 border-t border-border/50 space-y-3">
+            <Button onClick={handleSaveEck} className="w-full gap-2" disabled={saveEckMut.isPending || !Object.values(eckScores).every((v) => v !== null)}>
+              <Save className="w-4 h-4" />
+              {saveEckMut.isPending ? "Guardando..." : "Guardar Evaluación ECK"}
+            </Button>
+
+            {patientScales.length >= 2 && (
+              <div className="pt-4 border-t border-border/50">
+                <h4 className="font-semibold text-sm mb-3">Evolución ECK</h4>
+                <div className="h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={[...patientScales].sort((a, b) => new Date(a.assessment_date || a.created_date) - new Date(b.assessment_date || b.created_date)).slice(-10).map((s) => ({
+                      fecha: format(new Date(s.assessment_date || s.created_date), "dd/MM HH:mm", { locale: es }),
+                      puntaje: s.total_score ?? 0,
+                    }))}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis dataKey="fecha" tick={{ fontSize: 10 }} />
+                      <YAxis domain={[0, 12]} ticks={[0, 4, 8, 12]} tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="puntaje" stroke="#0e7490" strokeWidth={2} dot={{ r: 4 }} name="Puntaje ECK" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {patientScales.length > 0 && (
+              <div className="pt-4 border-t border-border/50">
+                <h4 className="font-semibold text-sm mb-3">Historial Reciente</h4>
+                <div className="space-y-1.5">
+                  {patientScales.slice(0, 6).map((a) => {
+                    const r = getResult(a.total_score);
+                    return (
+                      <div key={a.id} className="flex justify-between items-center p-2 rounded-lg bg-muted/40 text-xs">
+                        <span className="text-muted-foreground">{format(new Date(a.assessment_date || a.created_date), "dd/MM HH:mm", { locale: es })}</span>
+                        <span className="font-bold">{a.total_score}/12 <span className="font-normal text-muted-foreground">({r.label})</span></span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
-      <Card className="border-border/50">
-        <CardContent className="p-6 space-y-4">
-          <div className="space-y-1.5">
-            <Label>Observación Final</Label>
-            <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
-          </div>
-          <Button onClick={handleSave} className="w-full gap-2" disabled={saveMut.isPending}>
-            <Save className="w-4 h-4" />
-            {saveMut.isPending ? "Guardando..." : "Registrar Signos Vitales"}
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="flex justify-center">
+        <Button onClick={handleSave} className="w-full max-w-md gap-2" disabled={saveMut.isPending}>
+          <Save className="w-4 h-4" />
+          {saveMut.isPending ? "Guardando..." : "Registrar Signos Vitales"}
+        </Button>
+      </div>
 
       {/* Registro clínico automático */}
       <Card className="border-border/50">

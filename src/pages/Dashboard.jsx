@@ -72,9 +72,8 @@ export default function Dashboard() {
                         <p className="text-xs text-muted-foreground">Score: {s.total_score || 0}</p>
                       </div>
                       <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                        s.risk_level === "critico" ? "bg-destructive/10 text-destructive" :
-                        s.risk_level === "alto" ? "bg-orange-100 text-orange-700" :
-                        s.risk_level === "moderado" ? "bg-yellow-100 text-yellow-700" :
+                        s.assistance_level === "severa" ? "bg-destructive/10 text-destructive" :
+                        s.assistance_level === "moderada" ? "bg-yellow-100 text-yellow-700" :
                         "bg-green-100 text-green-700"
                       }`}>
                         {s.care_frequency || 0}x/24h
