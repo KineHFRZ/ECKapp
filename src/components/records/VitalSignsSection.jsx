@@ -35,14 +35,15 @@ const ruidoPulmonarZonaOptions = ["Anterior", "Ápices", "Bibasal", "Bilateral",
 const ruidosAgregadosOptions = ["Crepitos", "Estertor", "Roncus", "Sibilancias", "Sin Ruidos Agregados"];
 
 const movilidadOptions = [
+  "Bipedo",
   "Evaluación Kinésica",
-  "Movilidad Pasiva",
+  "Fortalecimiento Muscular",
+  "Marcha",
+  "Movilidad Activa",
   "Movilidad Activa asistida",
   "Movilidad Activa resistida",
-  "Fortalecimiento Muscular",
+  "Movilidad Pasiva",
   "Sedente Borde Cama",
-  "Bipedo",
-  "Marcha",
 ];
 
 const respiratoriaOptions = [
