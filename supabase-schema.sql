@@ -61,20 +61,28 @@ CREATE TABLE public."VitalSigns" (
   ssf NUMERIC,
   tono_muscular TEXT,
   sensibilidad TEXT,
-  observaciones_neurologicas TEXT,
-  apreciacion_inicial TEXT,
-  estado_general TEXT,
-  ventilatory_mode TEXT,
-  apremio_ventilatorio TEXT,
-  ruido_pulmonar TEXT,
-  ruido_pulmonar_zona TEXT,
-  ruidos_agregados TEXT,
-  mecanismo_tos TEXT,
-  caracteristicas_tos TEXT,
-  secreciones TEXT,
-  evaluacion_estado_general TEXT,
-  posicion_cama TEXT,
-  techniques JSONB DEFAULT '[]'::jsonb,
+   observaciones_neurologicas TEXT,
+   apreciacion_inicial TEXT,
+   estado_general TEXT,
+   ventilatory_mode TEXT,
+   apremio_ventilatorio TEXT,
+   ruido_pulmonar TEXT,
+   ruido_pulmonar_zona TEXT,
+   ruidos_agregados TEXT,
+   mecanismo_tos TEXT,
+   caracteristicas_tos TEXT,
+   secreciones TEXT,
+   evaluacion_estado_general TEXT,
+   posicion_cama TEXT,
+   fc_final NUMERIC,
+   fr_final NUMERIC,
+   spo2_final NUMERIC,
+   fio2_final NUMERIC,
+   flujo_o2_final NUMERIC,
+   distancia_recorrido TEXT,
+   tipo_aspiracion TEXT,
+   cantidad_aspiracion TEXT,
+   techniques JSONB DEFAULT '[]'::jsonb,
   notes TEXT,
   created_date TIMESTAMPTZ DEFAULT NOW(),
   updated_date TIMESTAMPTZ DEFAULT NOW()
@@ -118,6 +126,19 @@ CREATE TABLE public."Intervention" (
   created_date TIMESTAMPTZ DEFAULT NOW(),
   updated_date TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- ============================================================
+-- Migraciones para columnas faltantes (ejecutar en orden)
+-- ============================================================
+
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS fc_final NUMERIC;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS fr_final NUMERIC;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS spo2_final NUMERIC;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS fio2_final NUMERIC;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS flujo_o2_final NUMERIC;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS distancia_recorrido TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS tipo_aspiracion TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS cantidad_aspiracion TEXT;
 
 -- ============================================================
 -- Índices para búsquedas rápidas
