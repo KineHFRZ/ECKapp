@@ -39,7 +39,6 @@ const movilidadOptions = [
   "Movilidad Pasiva",
   "Movilidad Activa asistida",
   "Movilidad Activa",
-  "Movilidad Activa resistida",
   "Fortalecimiento Muscular",
   "Sedente Borde Cama",
   "Bipedo",
