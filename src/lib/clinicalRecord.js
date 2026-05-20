@@ -97,7 +97,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   }
 
   let evalLine = "";
-  if (form.ikctv) evalLine += `IKCTV ${form.ikctv} pts.`;
+  if (form.ikctv) evalLine += `IKCTV ${form.ikctv} ptos.`;
 
   const funcParts = [];
   if (form.fuerza_muscular) funcParts.push(`Fuerza muscular: ${form.fuerza_muscular}`);
@@ -108,7 +108,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (funcParts.length > 0) evalLine += ` ${funcParts.join(", ")}.`;
 
   if (form.fss_icu_no_valorable) evalLine += ` FSS-ICU: No valorable.`;
-  else if (form.fss_icu) evalLine += ` FSS-ICU ${form.fss_icu} pts.`;
+  else if (form.fss_icu) evalLine += ` FSS-ICU ${form.fss_icu} ptos.`;
 
   if (evalLine) lines.push(evalLine);
 
