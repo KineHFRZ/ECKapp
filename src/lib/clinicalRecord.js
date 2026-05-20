@@ -25,26 +25,30 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   lines.push("Paciente cumple con requisitos previos para la atención kinésica.");
 
+  let line = "";
+
   if (form.apreciacion_inicial) {
     const aprecParts = [`Se encuentra ${form.apreciacion_inicial}`];
     if (form.estado_general) aprecParts.push(form.estado_general);
     if (form.gcs) aprecParts.push(`GCS ${form.gcs}/15`);
     if (form.sas) aprecParts.push(`SAS ${form.sas}/7`);
     if (form.s5q) aprecParts.push(`S5Q ${form.s5q}/5`);
-    lines.push(`${aprecParts.join(", ")}.`);
+    line += `${aprecParts.join(", ")}.`;
   } else {
     const neuroParts = [];
     if (form.gcs) neuroParts.push(`GCS ${form.gcs}/15`);
     if (form.sas) neuroParts.push(`SAS ${form.sas}/7`);
     if (form.s5q) neuroParts.push(`S5Q ${form.s5q}/5`);
-    if (neuroParts.length > 0) lines.push(`${neuroParts.join(", ")}.`);
+    if (neuroParts.length > 0) line += `${neuroParts.join(", ")}.`;
   }
+
+  if (form.apremio_ventilatorio) line += ` ${form.apremio_ventilatorio}.`;
 
   if (form.observacion_inicial && form.observacion_inicial.trim()) {
-    lines.push(`${form.observacion_inicial.trim()}`);
+    line += ` ${form.observacion_inicial.trim()}`;
   }
 
-  if (form.apremio_ventilatorio) lines.push(`${form.apremio_ventilatorio}.`);
+  if (line) lines.push(line);
 
   const vitalParts = [];
   if (form.heart_rate) vitalParts.push(`FC ${form.heart_rate} lpm`);
@@ -56,7 +60,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.spo2) vitalParts.push(`SpO₂ ${form.spo2}%`);
   if (form.fio2) vitalParts.push(`FiO₂ ${form.fio2}%`);
   if (form.temperature) vitalParts.push(`T° ${form.temperature}°C`);
-  if (form.oxygen_support) vitalParts.push(`oxigenoterapia/terapia ventilatoria: ${oxygenLabel(form.oxygen_support)}`);
+  if (form.oxygen_support) vitalParts.push(`con ${oxygenLabel(form.oxygen_support)}`);
   if (form.cnaf_flow) vitalParts.push(`flujo CNAF ${form.cnaf_flow} lpm`);
   if (form.flujo_naricera) vitalParts.push(`flujo O2 ${form.flujo_naricera} lpm`);
   if (form.irox) vitalParts.push(`iROX ${form.irox}`);
@@ -90,7 +94,8 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`${auscLine}.`);
   }
 
-  if (form.ikctv) lines.push(`IKCTV ${form.ikctv}.`);
+  let evalLine = "";
+  if (form.ikctv) evalLine += `IKCTV ${form.ikctv} pts.`;
 
   const funcParts = [];
   if (form.fuerza_muscular) funcParts.push(`Fuerza muscular: ${form.fuerza_muscular}`);
@@ -98,32 +103,14 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.tono_muscular) funcParts.push(`tono muscular: ${form.tono_muscular}`);
   if (form.sensibilidad) funcParts.push(`sensibilidad: ${form.sensibilidad}`);
   if (form.observaciones_neurologicas) funcParts.push(`obs. neurológicas: ${form.observaciones_neurologicas}`);
-  if (funcParts.length > 0) lines.push(`${funcParts.join(", ")}.`);
+  if (funcParts.length > 0) evalLine += ` ${funcParts.join(", ")}.`;
 
-  const techs = techniques && techniques.length > 0 ? techniques : [];
-  if (techs.length > 0) {
-    const techStr = techs.map(t => {
-      const lower = t.toLowerCase();
-      if (t === "Sedente Borde Cama" && form.pto) return `sedente borde cama (PTO: ${form.pto})`;
-      if (t === "Marcha" && form.distancia_recorrido) return `marcha (${form.distancia_recorrido})`;
-      if (t === "Aspiración de secreciones") {
-        let subParts = [];
-        if (form.tipo_aspiracion) subParts.push(form.tipo_aspiracion);
-        if (form.cantidad_aspiracion) subParts.push(`cantidad de secreciones ${form.cantidad_aspiracion}`);
-        return "aspiración de secreciones" + (subParts.length > 0 ? " " + subParts.join(", ") : "");
-      }
-      return lower;
-    });
-    const last = techStr[techStr.length - 1];
-    const rest = techStr.slice(0, -1);
-    const result = rest.length > 0 ? `${rest.join(", ")} y ${last}` : last;
-    lines.push(`Se realiza: ${result}.`);
-  }
+  if (form.fss_icu_no_valorable) evalLine += ` FSS-ICU: No valorable.`;
+  else if (form.fss_icu) evalLine += ` FSS-ICU ${form.fss_icu} pts.`;
+
+  if (evalLine) lines.push(evalLine);
 
   if (form.asistencia_transiciones) lines.push(`Transiciones: ${form.asistencia_transiciones}.`);
-
-  if (form.fss_icu_no_valorable) lines.push(`FSS-ICU: No valorable.`);
-  else if (form.fss_icu) lines.push(`FSS-ICU ${form.fss_icu}.`);
 
   const evalParts = [];
   if (form.tolerancia) evalParts.push(`Tolerancia: ${form.tolerancia}`);
@@ -166,7 +153,6 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`  - Permeabilización Vía Aérea: ${d != null ? d : "—"}/3`);
     lines.push(`  - Movilidad Funcional: ${m != null ? m : "—"}/3`);
     lines.push(`  - Puntaje Total: ${total}/12 → ${result.label}`);
-    lines.push(`  - Atenciones requeridas: ${result.frequency}${result.level === "severa" ? " o más" : ""} en 24 hrs`);
   }
 
   lines.push("Atención finalizada sin incidentes.");
