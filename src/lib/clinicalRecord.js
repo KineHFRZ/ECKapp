@@ -158,7 +158,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`  - Carga Ventilatoria: ${v != null ? v : "—"}/3`);
     lines.push(`  - Permeabilización Vía Aérea: ${d != null ? d : "—"}/3`);
     lines.push(`  - Movilidad Funcional: ${m != null ? m : "—"}/3`);
-    lines.push(`  - Puntaje Total: ${total}/12 → ${result.label.split(",")[0]}`);
+    lines.push(`  - Puntaje Total: ${total}/12 → ${result.label}`);
   }
 
   lines.push("Atención finalizada sin incidentes.");
