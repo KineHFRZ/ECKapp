@@ -247,9 +247,9 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               <Select value={form.estado_general} onValueChange={(v) => updateField("estado_general", v)}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Buena condición general">Buena condición general</SelectItem>
-                  <SelectItem value="Regular condición general">Regular condición general</SelectItem>
-                  <SelectItem value="Mal estado general">Mal estado general</SelectItem>
+                  <SelectItem value="buen estado general">buen estado general</SelectItem>
+                  <SelectItem value="regular estado general">regular estado general</SelectItem>
+                  <SelectItem value="mal estado general">mal estado general</SelectItem>
                 </SelectContent>
               </Select>
             </VitalField>

@@ -236,9 +236,9 @@ export default function VitalSigns() {
                   <Select value={form.estado_general} onValueChange={(v) => updateField("estado_general", v)}>
                     <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="BCG">BCG</SelectItem>
-                      <SelectItem value="RCG">RCG</SelectItem>
-                      <SelectItem value="MCG">MCG</SelectItem>
+                      <SelectItem value="buen estado general">buen estado general</SelectItem>
+                      <SelectItem value="regular estado general">regular estado general</SelectItem>
+                      <SelectItem value="mal estado general">mal estado general</SelectItem>
                     </SelectContent>
                   </Select>
                 </VitalField>

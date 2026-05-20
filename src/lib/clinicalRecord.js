@@ -29,7 +29,6 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   if (form.apreciacion_inicial) {
     const aprecParts = [`Se encuentra ${form.apreciacion_inicial}`];
-    if (form.estado_general) aprecParts.push(form.estado_general);
     if (form.gcs) aprecParts.push(`GCS ${form.gcs}/15`);
     if (form.sas) aprecParts.push(`SAS ${form.sas}/7`);
     if (form.s5q) aprecParts.push(`S5Q ${form.s5q}/5`);
@@ -42,7 +41,10 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     if (neuroParts.length > 0) line += `${neuroParts.join(", ")}.`;
   }
 
-  if (form.apremio_ventilatorio) line += ` ${form.apremio_ventilatorio}.`;
+  const apremioParts = [];
+  if (form.apremio_ventilatorio) apremioParts.push(form.apremio_ventilatorio);
+  if (form.estado_general) apremioParts.push(form.estado_general);
+  if (apremioParts.length > 0) line += ` ${apremioParts.join(", ")}.`;
 
   if (form.observacion_inicial && form.observacion_inicial.trim()) {
     line += ` ${form.observacion_inicial.trim()}`;
