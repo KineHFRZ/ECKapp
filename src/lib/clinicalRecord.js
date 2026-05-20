@@ -16,11 +16,11 @@ const oxygenOptions = [
 const oxygenLabel = (val) => oxygenOptions.find((o) => o.value === val)?.label || val;
 
 export function generateClinicalRecord({ patient, form, techniques, eckScores, latestScale, now }) {
-  const date = format(now, "dd 'de' MMMM 'de' yyyy, HH:mm", { locale: es });
+  const time = format(now, "HH:mm", { locale: es });
 
   const lines = [];
   lines.push("KNT");
-  lines.push(`Fecha: ${date}`);
+  lines.push(time);
   lines.push("");
 
   lines.push("Paciente cumple con requisitos previos para la atención kinésica.");
@@ -112,6 +112,10 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   if (evalLine) lines.push(evalLine);
 
+  if (techniques && techniques.length > 0) {
+    lines.push(`Se realiza: ${techniques.join(", ").toLowerCase()}.`);
+  }
+
   if (form.asistencia_transiciones) lines.push(`Transiciones: ${form.asistencia_transiciones}.`);
 
   const evalParts = [];
@@ -154,7 +158,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`  - Carga Ventilatoria: ${v != null ? v : "—"}/3`);
     lines.push(`  - Permeabilización Vía Aérea: ${d != null ? d : "—"}/3`);
     lines.push(`  - Movilidad Funcional: ${m != null ? m : "—"}/3`);
-    lines.push(`  - Puntaje Total: ${total}/12 → ${result.label}`);
+    lines.push(`  - Puntaje Total: ${total}/12 → ${result.label.split(",")[0]}`);
   }
 
   lines.push("Atención finalizada sin incidentes.");
