@@ -235,6 +235,9 @@ export default function ReportPreview({ patient, vitals, scales, interventions }
                 observaciones_neurologicas: v.observaciones_neurologicas || "",
                 observacion_inicial: v.observacion_inicial || "",
                 observacion_final: v.observacion_final || "",
+                oxygen_support_final: v.oxygen_support_final || "",
+                cnaf_flow_final: v.cnaf_flow_final || "",
+                irox_final: v.irox_final || "",
               };
 
               const text = generateClinicalRecord({

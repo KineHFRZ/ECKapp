@@ -85,6 +85,7 @@ const initialForm = {
   tono_muscular: "", sensibilidad: "", observaciones_neurologicas: "",
   distancia_recorrido: "", tipo_aspiracion: "", cantidad_aspiracion: "",   observacion_inicial: "", observacion_final: "",
   fc_final: "", fr_final: "", spo2_final: "", fio2_final: "", flujo_o2_final: "",
+  oxygen_support_final: "", cnaf_flow_final: "", irox_final: "",
 };
 
 function VitalField({ icon: Icon, label, children, color }) {
@@ -141,6 +142,23 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
     }
   }, [iroxValue, form.oxygen_support]);
 
+  const iroxFinalValue = useMemo(() => {
+    if (form.oxygen_support_final !== "cnaf") return "";
+    const spo2 = parseFloat(form.spo2_final);
+    const fio2 = parseFloat(form.fio2_final);
+    const fr = parseFloat(form.fr_final);
+    if (!spo2 || !fio2 || !fr || fio2 <= 0 || fr <= 0) return "";
+    return ((spo2 / (fio2 / 100)) / fr).toFixed(2);
+  }, [form.spo2_final, form.fio2_final, form.fr_final, form.oxygen_support_final]);
+
+  useEffect(() => {
+    if (form.oxygen_support_final === "cnaf" && iroxFinalValue) {
+      setForm((prev) => ({ ...prev, irox_final: iroxFinalValue }));
+    } else if (form.oxygen_support_final !== "cnaf") {
+      setForm((prev) => ({ ...prev, irox_final: "" }));
+    }
+  }, [iroxFinalValue, form.oxygen_support_final]);
+
   const pamValue = useMemo(() => {
     const sys = parseFloat(form.systolic_bp);
     const dia = parseFloat(form.diastolic_bp);
@@ -172,7 +190,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
 
   const handleSave = () => {
     if (!patientId) { toast.error("Selecciona un paciente"); return; }
-    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final", "fss_giro", "fss_sedente_bipedo", "fss_supino_sedente", "fss_marcha", "fss_sedente_apoyo"];
+    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final", "fss_giro", "fss_sedente_bipedo", "fss_supino_sedente", "fss_marcha", "fss_sedente_apoyo", "cnaf_flow_final", "irox_final"];
     const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => { if (form[f]) parsed[f] = Number(form[f]); });
@@ -351,11 +369,6 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
             <VitalField icon={Wind} label="Flujo CNAF (lpm)" color="text-teal-500">
               <Input type="number" value={form.cnaf_flow} onChange={(e) => updateField("cnaf_flow", e.target.value)} placeholder="Ej: 40" />
             </VitalField>
-            {form.oxygen_support === "cnaf" && (
-              <VitalField icon={Wind} label="iROX" color="text-teal-500">
-                <Input type="text" value={form.irox || ""} readOnly className="bg-muted" placeholder="Calculado" />
-              </VitalField>
-            )}
             <VitalField icon={Wind} label="Modo Ventilatorio" color="text-teal-500">
               <Select value={form.ventilatory_mode} onValueChange={(v) => updateField("ventilatory_mode", v)}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
@@ -678,6 +691,22 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
             <VitalField icon={Wind} label="Flujo O₂ final (lpm)" color="text-teal-500">
               <Input type="number" value={form.flujo_o2_final} onChange={(e) => updateField("flujo_o2_final", e.target.value)} placeholder="Ej: 3" />
             </VitalField>
+            <VitalField icon={Wind} label="Soporte O₂ final" color="text-teal-500">
+              <Select value={form.oxygen_support_final} onValueChange={(v) => updateField("oxygen_support_final", v)}>
+                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                <SelectContent>
+                  {oxygenOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </VitalField>
+            <VitalField icon={Wind} label="Flujo CNAF final (lpm)" color="text-teal-500">
+              <Input type="number" value={form.cnaf_flow_final} onChange={(e) => updateField("cnaf_flow_final", e.target.value)} placeholder="Ej: 40" />
+            </VitalField>
+            {form.oxygen_support_final === "cnaf" && (
+              <VitalField icon={Wind} label="iROX final" color="text-teal-500">
+                <Input type="text" value={form.irox_final || ""} readOnly className="bg-muted" placeholder="Calculado" />
+              </VitalField>
+            )}
           </div>
           <div className="space-y-1.5">
             <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />

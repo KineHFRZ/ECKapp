@@ -364,11 +364,6 @@ export default function VitalSigns() {
                 <VitalField icon={Wind} label="Flujo CNAF (lpm)" color="text-teal-500">
                   <Input type="number" value={form.cnaf_flow} onChange={(e) => updateField("cnaf_flow", e.target.value)} placeholder="Ej: 40" />
                 </VitalField>
-                {form.oxygen_support === "cnaf" && (
-                  <VitalField icon={Wind} label="iROX" color="text-teal-500">
-                    <Input type="text" value={form.irox || ""} readOnly className="bg-muted" placeholder="Calculado" />
-                  </VitalField>
-                )}
                 <VitalField icon={Wind} label="Modo Ventilatorio" color="text-teal-500">
                   <Select value={form.ventilatory_mode} onValueChange={(v) => updateField("ventilatory_mode", v)}>
                     <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>

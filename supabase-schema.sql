@@ -81,6 +81,9 @@ CREATE TABLE public."VitalSigns" (
    spo2_final NUMERIC,
    fio2_final NUMERIC,
    flujo_o2_final NUMERIC,
+   oxygen_support_final TEXT,
+   cnaf_flow_final NUMERIC,
+   irox_final NUMERIC,
    distancia_recorrido TEXT,
    tipo_aspiracion TEXT,
    cantidad_aspiracion TEXT,
@@ -170,6 +173,9 @@ CREATE POLICY "Acceso público ScaleAssessment" ON public."ScaleAssessment"
 CREATE POLICY "Acceso público Intervention" ON public."Intervention"
   FOR ALL USING (true) WITH CHECK (true);
 
--- Migración: nuevas columnas para Inspección General
+-- Migración: nuevas columnas para Inspección General y Observación Final
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS colaboracion TEXT;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS sopor_level TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS oxygen_support_final TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS cnaf_flow_final NUMERIC;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS irox_final NUMERIC;
