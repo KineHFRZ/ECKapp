@@ -418,6 +418,11 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               </Select>
             </VitalField>
           </div>
+          <div className="mt-4 pt-4 border-t border-border/50">
+            <VitalField icon={Wind} label="IKCTV" color="text-teal-500">
+              <Input type="number" value={form.ikctv} onChange={(e) => updateField("ikctv", e.target.value)} placeholder="0-24" />
+            </VitalField>
+          </div>
         </CardContent>
       </Card>
 
@@ -469,52 +474,6 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
            </div>
             </div>
          </CardContent>
-      </Card>
-
-      <Card className="border-border/50">
-        <CardContent className="p-6">
-          <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
-            <Activity className="w-4 h-4 text-primary" />
-            Escalas de Evaluación
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <VitalField icon={Wind} label="IKCTV" color="text-teal-500">
-              <Input type="number" value={form.ikctv} onChange={(e) => updateField("ikctv", e.target.value)} placeholder="0-24" />
-            </VitalField>
-          </div>
-          <div className="mt-4 pt-4 border-t border-border/50">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-semibold text-primary flex items-center gap-1.5">
-                <Activity className="w-4 h-4" /> FSS - ICU
-              </h4>
-              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) { ["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].forEach((k) => updateField(k, "")); } }} className="accent-primary" />
-                No valorable
-              </label>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-              {[
-                { key: "fss_giro", label: "Giro" },
-                { key: "fss_sedente_bipedo", label: "Transición Sedente a Bípedo" },
-                { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
-                { key: "fss_marcha", label: "Marcha" },
-                { key: "fss_sedente_apoyo", label: "Sedente Sin Apoyo" },
-              ].map((item) => {
-                const val = parseInt(form[item.key]) || 0;
-                const total = ["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0);
-                return (
-                  <div key={item.key} className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">{item.label}</Label>
-                    <Input type="number" min="0" max="7" value={form[item.key]} onChange={(e) => updateField(item.key, e.target.value)} placeholder="0-7" disabled={form.fss_icu_no_valorable} className="text-sm" />
-                  </div>
-                );
-              })}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2 text-right">
-              Total: {["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0)}/35
-            </p>
-          </div>
-        </CardContent>
       </Card>
 
       <Card className="border-border/50">
@@ -707,6 +666,74 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
           <div className="space-y-1.5">
             <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/50">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <Activity className="w-4 h-4 text-primary" /> FSS - ICU
+            </h3>
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+              <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) { ["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].forEach((k) => updateField(k, "")); } }} className="accent-primary" />
+              No valorable
+            </label>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { key: "fss_giro", label: "Giro" },
+              { key: "fss_sedente_bipedo", label: "Transición Sedente a Bípedo" },
+              { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
+              { key: "fss_marcha", label: "Marcha" },
+            ].map((item) => {
+              const val = form[item.key] != null && form[item.key] !== "" ? parseInt(form[item.key]) : null;
+              return (
+                <div key={item.key} className="p-4 rounded-xl bg-card border border-border/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-xs text-foreground">{item.label}</h4>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${val == null ? "bg-gray-400" : val <= 2 ? "bg-green-500" : val <= 4 ? "bg-yellow-500" : val <= 6 ? "bg-orange-500" : "bg-red-600"}`}>
+                      {val ?? "—"}/7
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[0,1,2,3,4,5,6,7].map((n) => (
+                      <button key={n} type="button" disabled={form.fss_icu_no_valorable}
+                        onClick={() => updateField(item.key, n.toString())}
+                        className={`h-9 rounded-lg text-sm font-bold transition-all border-2 ${val === n ? "bg-primary text-white border-primary shadow-sm" : "bg-muted text-muted-foreground border-transparent hover:border-primary/40"}`}
+                      >{n}</button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+            {[
+              { key: "fss_sedente_apoyo", label: "Sedente Sin Apoyo" },
+            ].map((item) => {
+              const val = form[item.key] != null && form[item.key] !== "" ? parseInt(form[item.key]) : null;
+              return (
+                <div key={item.key} className="p-4 rounded-xl bg-card border border-border/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-xs text-foreground">{item.label}</h4>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${val == null ? "bg-gray-400" : val <= 2 ? "bg-green-500" : val <= 4 ? "bg-yellow-500" : val <= 6 ? "bg-orange-500" : "bg-red-600"}`}>
+                      {val ?? "—"}/7
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[0,1,2,3,4,5,6,7].map((n) => (
+                      <button key={n} type="button" disabled={form.fss_icu_no_valorable}
+                        onClick={() => updateField(item.key, n.toString())}
+                        className={`h-9 rounded-lg text-sm font-bold transition-all border-2 ${val === n ? "bg-primary text-white border-primary shadow-sm" : "bg-muted text-muted-foreground border-transparent hover:border-primary/40"}`}
+                      >{n}</button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-xs text-muted-foreground mt-3 text-right font-semibold">
+            Total: {["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0)}/35
+          </p>
         </CardContent>
       </Card>
 
