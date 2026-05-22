@@ -149,8 +149,8 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     { key: "fss_marcha", label: "Marcha" },
     { key: "fss_sedente_apoyo", label: "Sedente Sin Apoyo" },
   ];
-  const fssFilled = fssItems.some((item) => form[item.key]);
-  if (fssFilled) {
+  const fssHasValues = fssItems.some((item) => form[item.key]) || form.fss_icu_no_valorable;
+  if (fssHasValues) {
     if (form.fss_icu_no_valorable) {
       lines.push("Evaluación FSS-ICU: No valorable.");
     } else {
