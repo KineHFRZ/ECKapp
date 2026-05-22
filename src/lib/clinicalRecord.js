@@ -28,7 +28,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   let line = "";
 
   if (form.apreciacion_inicial) {
-    const aprecVal = form.apreciacion_inicial === "Sopor" && form.sopor_level ? `sopor (${form.sopor_level})` : form.apreciacion_inicial.toLowerCase();
+    const aprecVal = form.apreciacion_inicial === "Sopor" && form.sopor_level ? `Sopor (${form.sopor_level})` : form.apreciacion_inicial;
     const aprecParts = [aprecVal];
     if (form.gcs) aprecParts.push(`GCS ${form.gcs}/15`);
     if (form.sas) aprecParts.push(`SAS ${form.sas}/7`);
@@ -71,7 +71,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.respiratory_rate) respParts.push(`FR ${form.respiratory_rate} rpm`);
   if (form.spo2) respParts.push(`SpO₂ ${form.spo2}%`);
   if (form.fio2) respParts.push(`FiO₂ ${form.fio2}%`);
-  if (form.oxygen_support) respParts.push(`con ${oxygenLabel(form.oxygen_support)}`);
+  if (form.oxygen_support) respParts.push(`con ${oxygenLabel(form.oxygen_support).toLowerCase()}`);
   if (form.cnaf_flow) respParts.push(`flujo CNAF ${form.cnaf_flow} lpm`);
   if (form.flujo_naricera) respParts.push(`flujo O2 ${form.flujo_naricera} lpm`);
   if (form.irox) respParts.push(`iROX ${form.irox}`);
@@ -105,7 +105,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   }
   if (auscParts.length > 0) {
     if (respLine) respLine += ", ";
-    respLine += `Auscultación: ${auscParts.join(", ")}`;
+    respLine += `auscultación: ${auscParts.join(", ")}`;
   }
 
   if (form.observaciones_ausc && form.observaciones_ausc.trim()) {
@@ -119,7 +119,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     if (form.caracteristicas_tos) tosParts.push(form.caracteristicas_tos.toLowerCase());
     if (form.secreciones) tosParts.push(`secreciones ${form.secreciones.toLowerCase()}`);
     if (respLine) respLine += ", ";
-    respLine += `Evaluación de la tos: ${tosParts.join(", ")}`;
+    respLine += `evaluación de la tos: ${tosParts.join(", ")}`;
   }
 
   if (form.observaciones_vent && form.observaciones_vent.trim()) {
@@ -133,7 +133,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   const funcParts = [];
   if (form.fuerza_muscular) {
-    let fm = `fuerza muscular: ${form.fuerza_muscular.toLowerCase()}`;
+    let fm = `Fuerza muscular: ${form.fuerza_muscular.toLowerCase()}`;
     if (form.fuerza_muscular === "Alterada" && form.fuerza_muscular_loc) {
       const locs = form.fuerza_muscular_loc.split(",").filter(Boolean);
       if (locs.length > 0) fm += ` en ${locs.join(", ")}`;
@@ -141,22 +141,29 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     funcParts.push(fm);
   }
   if (form.rom) {
-    let r = `rom: ${form.rom.toLowerCase()}`;
+    let r = `ROM: ${form.rom.toLowerCase()}`;
     if (form.rom === "Alterado" && form.rom_loc) {
       const locs = form.rom_loc.split(",").filter(Boolean);
       if (locs.length > 0) r += ` en ${locs.join(", ")}`;
     }
     funcParts.push(r);
   }
-  if (form.tono_muscular) funcParts.push(`tono muscular: ${form.tono_muscular.toLowerCase()}`);
-  if (form.sensibilidad) funcParts.push(`sensibilidad: ${form.sensibilidad.toLowerCase()}`);
-  if (form.observaciones_neurologicas) funcParts.push(`obs. neurológicas: ${form.observaciones_neurologicas.toLowerCase()}`);
+  if (form.tono_muscular) funcParts.push(`Tono muscular: ${form.tono_muscular.toLowerCase()}`);
+  if (form.sensibilidad) funcParts.push(`Sensibilidad: ${form.sensibilidad.toLowerCase()}`);
+  if (form.observaciones_neurologicas) funcParts.push(`Obs. neurológicas: ${form.observaciones_neurologicas.toLowerCase()}`);
   if (funcParts.length > 0) lines.push(`${funcParts.join(", ")}.`);
 
   if (techniques && techniques.length > 0) {
     const techDisplay = techniques.map((t) => {
       const base = t.toLowerCase();
-      if (base.includes("sedente borde cama") && form.pto) return `${base} (PTO: ${form.pto})`;
+      if (base.includes("sedente borde cama")) {
+        const parts = [base];
+        if (form.pto) parts.push(`PTO: ${form.pto}`);
+        if (form.sedente_comentario) parts.push(form.sedente_comentario.toLowerCase());
+        return parts.join(", ");
+      }
+      if (base === "bipedo" && form.bipedo_comentario) return `${base} (${form.bipedo_comentario.toLowerCase()})`;
+      if (base === "marcha" && form.marcha_comentario) return `${base} (${form.marcha_comentario.toLowerCase()})`;
       if (base === "aspiración de secreciones" || base === "aspiracion de secreciones") {
         if (form.aspiracion_comentario) return `${base} (${form.aspiracion_comentario.toLowerCase()})`;
         return base;
@@ -167,7 +174,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   }
 
   const evalParts = [];
-  if (form.tolerancia) evalParts.push(`tolerancia: ${form.tolerancia.toLowerCase()}`);
+  if (form.tolerancia) evalParts.push(`Tolerancia: ${form.tolerancia.toLowerCase()}`);
   if (form.porcentaje_fc_rut) evalParts.push(`%FCRut: ${form.porcentaje_fc_rut}%`);
   if (form.disnea) evalParts.push(`Disnea: ${form.disnea}/10`);
   if (form.ssf) evalParts.push(`SSF: ${form.ssf}/10`);
@@ -194,7 +201,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.spo2_final) finalVitalParts.push(`SpO₂ final ${form.spo2_final}%`);
   if (form.fio2_final) finalVitalParts.push(`FiO₂ final ${form.fio2_final}%`);
   if (form.flujo_o2_final) finalVitalParts.push(`flujo O₂ final ${form.flujo_o2_final} lpm`);
-  if (form.oxygen_support_final) finalVitalParts.push(`con ${oxygenLabel(form.oxygen_support_final)}`);
+  if (form.oxygen_support_final) finalVitalParts.push(`con ${oxygenLabel(form.oxygen_support_final).toLowerCase()}`);
   if (form.cnaf_flow_final) finalVitalParts.push(`flujo CNAF final ${form.cnaf_flow_final} lpm`);
   if (form.irox_final) finalVitalParts.push(`iROX final ${form.irox_final}`);
   if (finalVitalParts.length > 0) lines.push(`${finalVitalParts.join(", ")}.`);
