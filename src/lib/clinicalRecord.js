@@ -163,8 +163,6 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     lines.push(`Se realiza: ${techniques.join(", ").toLowerCase()}.`);
   }
 
-  if (form.asistencia_transiciones) lines.push(`Transiciones: ${form.asistencia_transiciones}.`);
-
   const evalParts = [];
   if (form.tolerancia) evalParts.push(`Tolerancia: ${form.tolerancia}`);
   if (form.porcentaje_fc_rut) evalParts.push(`%FCRut: ${form.porcentaje_fc_rut}%`);

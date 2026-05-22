@@ -576,18 +576,6 @@ export default function VitalSigns() {
                     </SelectContent>
                   </Select>
                 </VitalField>
-                <VitalField icon={Activity} label="Asistencia en Transiciones" color="text-primary">
-                  <Select value={form.asistencia_transiciones} onValueChange={(v) => updateField("asistencia_transiciones", v)}>
-                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Asistencia leve">Asistencia leve</SelectItem>
-                      <SelectItem value="Asistencia máxima">Asistencia máxima</SelectItem>
-                      <SelectItem value="Asistencia moderada">Asistencia moderada</SelectItem>
-                      <SelectItem value="Asistencia técnica">Asistencia técnica</SelectItem>
-                      <SelectItem value="Sin asistencia">Sin asistencia</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </VitalField>
               </div>
             </CardContent>
           </Card>

@@ -703,28 +703,6 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
         <CardContent className="p-6">
           <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
             <Activity className="w-4 h-4 text-primary" />
-            Asistencia en Transiciones</h3>
-          <div className="max-w-sm">
-            <VitalField icon={Activity} label="Transiciones" color="text-primary">
-              <Select value={form.asistencia_transiciones} onValueChange={(v) => updateField("asistencia_transiciones", v)}>
-                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Asistencia leve">Asistencia leve</SelectItem>
-                  <SelectItem value="Asistencia máxima">Asistencia máxima</SelectItem>
-                  <SelectItem value="Asistencia moderada">Asistencia moderada</SelectItem>
-                  <SelectItem value="Asistencia técnica">Asistencia técnica</SelectItem>
-                  <SelectItem value="Sin asistencia">Sin asistencia</SelectItem>
-                </SelectContent>
-              </Select>
-            </VitalField>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/50">
-        <CardContent className="p-6">
-          <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
-            <Activity className="w-4 h-4 text-primary" />
             Evaluación Final
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
