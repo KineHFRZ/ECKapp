@@ -131,7 +131,6 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   let evalLine = "";
   if (form.ikctv) evalLine += `IKCTV ${form.ikctv} ptos.`;
-  if (form.pto && techniques && techniques.some((t) => t.toLowerCase().includes("sedente borde cama"))) evalLine += ` PTO ${form.pto}.`;
 
   const funcParts = [];
   if (form.fuerza_muscular) {
@@ -155,23 +154,21 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.observaciones_neurologicas) funcParts.push(`obs. neurológicas: ${form.observaciones_neurologicas}`);
   if (funcParts.length > 0) evalLine += ` ${funcParts.join(", ")}.`;
 
-  if (form.fss_icu_no_valorable) evalLine += ` FSS-ICU: No valorable.`;
-  else {
-    const fssItems = [
-      { key: "fss_giro", label: "Giro" },
-      { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
-      { key: "fss_sedente_borde_cama", label: "Sedente Borde Cama" },
-      { key: "fss_bipedo", label: "Bipedo" },
-      { key: "fss_marcha", label: "Marcha" },
-    ];
-    const fssTotal = fssItems.reduce((sum, item) => sum + (parseInt(form[item.key]) || 0), 0);
-    if (fssTotal > 0) evalLine += ` FSS-ICU: ${fssTotal}/35 ptos.`;
-  }
-
   if (evalLine) lines.push(evalLine);
 
   if (techniques && techniques.length > 0) {
-    lines.push(`Se realiza: ${techniques.join(", ").toLowerCase()}.`);
+    const techDisplay = techniques.map((t) => {
+      const base = t.toLowerCase();
+      if (base.includes("sedente borde cama") && form.pto) return `${base} (PTO: ${form.pto})`;
+      if (base === "aspiración de secreciones" || base === "aspiracion de secreciones") {
+        const parts = [];
+        if (form.tipo_aspiracion) parts.push(form.tipo_aspiracion.toLowerCase());
+        if (form.cantidad_aspiracion) parts.push(form.cantidad_aspiracion.toLowerCase());
+        return parts.length > 0 ? `${base} (${parts.join(", ")})` : base;
+      }
+      return base;
+    });
+    lines.push(`Se realiza: ${techDisplay.join(", ")}.`);
   }
 
   const evalParts = [];
@@ -180,6 +177,17 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.disnea) evalParts.push(`Disnea: ${form.disnea}/10`);
   if (form.ssf) evalParts.push(`SSF: ${form.ssf}/10`);
   if (evalParts.length > 0) lines.push(`${evalParts.join(", ")}.`);
+
+  const fssItems = [
+    { key: "fss_giro", label: "Giro" },
+    { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
+    { key: "fss_sedente_borde_cama", label: "Sedente Borde Cama" },
+    { key: "fss_bipedo", label: "Bipedo" },
+    { key: "fss_marcha", label: "Marcha" },
+  ];
+  const fssTotal = fssItems.reduce((sum, item) => sum + (parseInt(form[item.key]) || 0), 0);
+  if (form.fss_icu_no_valorable) lines.push("FSS-ICU: No valorable.");
+  else if (fssTotal > 0) lines.push(`FSS-ICU: ${fssTotal}/35 ptos.`);
 
   if (form.observacion_final && form.observacion_final.trim()) {
     lines.push(`${form.observacion_final.trim()}`);
@@ -200,28 +208,6 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.evaluacion_estado_general) quedaParts.push(form.evaluacion_estado_general);
   if (form.posicion_cama) quedaParts.push(form.posicion_cama);
   if (quedaParts.length > 0) lines.push(`Queda: ${quedaParts.join(", ")}.`);
-
-  const fssItems = [
-    { key: "fss_giro", label: "Giro" },
-    { key: "fss_sedente_bipedo", label: "Transición Sedente a Bípedo" },
-    { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
-    { key: "fss_marcha", label: "Marcha" },
-    { key: "fss_sedente_apoyo", label: "Sedente Sin Apoyo" },
-  ];
-  const fssHasValues = fssItems.some((item) => form[item.key]) || form.fss_icu_no_valorable;
-  if (fssHasValues) {
-    if (form.fss_icu_no_valorable) {
-      lines.push("Evaluación FSS-ICU: No valorable.");
-    } else {
-      const fssTotal = fssItems.reduce((sum, item) => sum + (parseInt(form[item.key]) || 0), 0);
-      lines.push("Evaluación FSS-ICU:");
-      fssItems.forEach((item) => {
-        const val = form[item.key];
-        lines.push(`  - ${item.label}: ${val != null && val !== "" ? val : "—"}/7`);
-      });
-      lines.push(`  - Puntaje Total: ${fssTotal}/35`);
-    }
-  }
 
   const eck = eckScores || latestScale;
   if (eck) {
