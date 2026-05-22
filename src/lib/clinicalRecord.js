@@ -161,10 +161,8 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
       const base = t.toLowerCase();
       if (base.includes("sedente borde cama") && form.pto) return `${base} (PTO: ${form.pto})`;
       if (base === "aspiración de secreciones" || base === "aspiracion de secreciones") {
-        const parts = [];
-        if (form.tipo_aspiracion) parts.push(form.tipo_aspiracion.toLowerCase());
-        if (form.cantidad_aspiracion) parts.push(form.cantidad_aspiracion.toLowerCase());
-        return parts.length > 0 ? `${base} (${parts.join(", ")})` : base;
+        if (form.aspiracion_comentario) return `${base} (${form.aspiracion_comentario.toLowerCase()})`;
+        return base;
       }
       return base;
     });

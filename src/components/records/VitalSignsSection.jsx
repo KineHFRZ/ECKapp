@@ -88,7 +88,7 @@ const initialForm = {
   fss_giro: "", fss_supino_sedente: "", fss_sedente_borde_cama: "", fss_bipedo: "", fss_marcha: "",
   tolerancia: "", porcentaje_fc_rut: "", disnea: "", ssf: "",
   tono_muscular: "", sensibilidad: "", observaciones_neurologicas: "",
-  distancia_recorrido: "", tipo_aspiracion: "", cantidad_aspiracion: "",   observacion_inicial: "", observacion_final: "",
+  distancia_recorrido: "", tipo_aspiracion: "", cantidad_aspiracion: "", aspiracion_comentario: "",   observacion_inicial: "", observacion_final: "",
   fc_final: "", fr_final: "", spo2_final: "", fio2_final: "", flujo_o2_final: "",
   oxygen_support_final: "", cnaf_flow_final: "", irox_final: "",
 };
@@ -196,7 +196,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
   const handleSave = () => {
     if (!patientId) { toast.error("Selecciona un paciente"); return; }
     const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final", "fss_giro", "fss_supino_sedente", "fss_sedente_borde_cama", "fss_bipedo", "fss_marcha", "cnaf_flow_final", "irox_final"];
-    const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "ruido_pulmonar_loc", "ruidos_agregados_loc", "fuerza_muscular", "fuerza_muscular_loc", "rom", "rom_loc", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas", "observaciones_vent", "observaciones_ausc", "sedente_comentario", "bipedo_comentario", "marcha_comentario", "tos_provocada_comentario", "tos_asistida_comentario", "tos_dirigida_comentario"];
+    const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "ruido_pulmonar_loc", "ruidos_agregados_loc", "fuerza_muscular", "fuerza_muscular_loc", "rom", "rom_loc", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "aspiracion_comentario", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas", "observaciones_vent", "observaciones_ausc", "sedente_comentario", "bipedo_comentario", "marcha_comentario", "tos_provocada_comentario", "tos_asistida_comentario", "tos_dirigida_comentario"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => { if (form[f]) parsed[f] = Number(form[f]); });
     stringFields.forEach((f) => { if (form[f]) parsed[f] = form[f]; });
@@ -668,31 +668,9 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                       </div>
                     )}
                     {tech === "Aspiración de secreciones" && techniques.includes("Aspiración de secreciones") && (
-                      <div className="ml-8 mb-3 space-y-2">
-                        <div className="space-y-1">
-                          <Label className="text-xs text-muted-foreground">Tipo de aspiración</Label>
-                          <Select value={form.tipo_aspiracion} onValueChange={(v) => updateField("tipo_aspiracion", v)}>
-                            <SelectTrigger className="w-full text-sm"><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Orofaríngea">Orofaríngea</SelectItem>
-                              <SelectItem value="Nasofaríngea">Nasofaríngea</SelectItem>
-                              <SelectItem value="Nasotraqueal">Nasotraqueal</SelectItem>
-                              <SelectItem value="Orotraqueal">Orotraqueal</SelectItem>
-                              <SelectItem value="Endotraqueal">Endotraqueal</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-xs text-muted-foreground">Cantidad</Label>
-                          <Select value={form.cantidad_aspiracion} onValueChange={(v) => updateField("cantidad_aspiracion", v)}>
-                            <SelectTrigger className="w-full text-sm"><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Escasa">Escasa</SelectItem>
-                              <SelectItem value="Moderada">Moderada</SelectItem>
-                              <SelectItem value="Abundante">Abundante</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                      <div className="ml-8 mb-3 space-y-1">
+                        <Label className="text-xs text-muted-foreground">Comentarios</Label>
+                        <Input type="text" value={form.aspiracion_comentario} onChange={(e) => updateField("aspiracion_comentario", e.target.value)} placeholder="tipo de aspiración, cantidad, características" className="w-full text-sm" />
                       </div>
                     )}
                   </div>
