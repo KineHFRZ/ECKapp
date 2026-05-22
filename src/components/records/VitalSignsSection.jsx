@@ -73,7 +73,7 @@ const initialForm = {
   heart_rate: "", systolic_bp: "", diastolic_bp: "", spo2: "",
   respiratory_rate: "", temperature: "", fio2: "", oxygen_support: "",
   pain_scale: "", notes: "", cnaf_flow: "", ventilatory_mode: "",
-  apreciacion_inicial: "", estado_general: "", apremio_ventilatorio: "",
+  apreciacion_inicial: "", sopor_level: "", colaboracion: "", apremio_ventilatorio: "",
   mecanismo_tos: "", caracteristicas_tos: "",
   evaluacion_estado_general: "", posicion_cama: "",
   ruido_pulmonar: "", ruido_pulmonar_zona: "", ruidos_agregados: "",
@@ -173,7 +173,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
   const handleSave = () => {
     if (!patientId) { toast.error("Selecciona un paciente"); return; }
     const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final", "fss_giro", "fss_sedente_bipedo", "fss_supino_sedente", "fss_marcha", "fss_sedente_apoyo"];
-    const stringFields = ["apreciacion_inicial", "estado_general", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas"];
+    const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => { if (form[f]) parsed[f] = Number(form[f]); });
     stringFields.forEach((f) => { if (form[f]) parsed[f] = form[f]; });
@@ -235,22 +235,38 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
           <h3 className="font-semibold mb-5 text-foreground">Inspección General</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
             <VitalField icon={Brain} label="Apreciación Inicial" color="text-purple-500">
-              <Select value={form.apreciacion_inicial} onValueChange={(v) => updateField("apreciacion_inicial", v)}>
+              <Select value={form.apreciacion_inicial} onValueChange={(v) => { updateField("apreciacion_inicial", v); if (v !== "Sopor") updateField("sopor_level", ""); }}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Contenido(a) de extremidades">Contenido(a) de extremidades</SelectItem>
-                  <SelectItem value="Cooperador(a) parcial">Cooperador(a) parcial</SelectItem>
                   <SelectItem value="Vigil">Vigil</SelectItem>
+                  <SelectItem value="Somnoliento(a)">Somnoliento(a)</SelectItem>
+                  <SelectItem value="Sopor">Sopor</SelectItem>
+                  <SelectItem value="Agitado(a)">Agitado(a)</SelectItem>
+                  <SelectItem value="Comatoso(a)">Comatoso(a)</SelectItem>
                 </SelectContent>
               </Select>
+              {form.apreciacion_inicial === "Sopor" && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-[10px] text-muted-foreground">Nivel:</span>
+                  {["superficial", "medio", "profundo"].map((n) => (
+                    <button key={n} type="button"
+                      onClick={() => updateField("sopor_level", n)}
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all border ${form.sopor_level === n ? "bg-primary text-white border-primary" : "bg-muted text-muted-foreground border-transparent hover:border-primary/40"}`}
+                    >{n}</button>
+                  ))}
+                </div>
+              )}
             </VitalField>
-            <VitalField icon={Brain} label="Estado General" color="text-purple-500">
-              <Select value={form.estado_general} onValueChange={(v) => updateField("estado_general", v)}>
+            <VitalField icon={Brain} label="Colaboración" color="text-purple-500">
+              <Select value={form.colaboracion} onValueChange={(v) => updateField("colaboracion", v)}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="buen estado general">buen estado general</SelectItem>
-                  <SelectItem value="regular estado general">regular estado general</SelectItem>
-                  <SelectItem value="mal estado general">mal estado general</SelectItem>
+                  <SelectItem value="tranquilo(a)">tranquilo(a)</SelectItem>
+                  <SelectItem value="colaborador(a)">colaborador(a)</SelectItem>
+                  <SelectItem value="colaborador(a) parcial">colaborador(a) parcial</SelectItem>
+                  <SelectItem value="no colaborador(a)">no colaborador(a)</SelectItem>
+                  <SelectItem value="contenido(a)">contenido(a)</SelectItem>
+                  <SelectItem value="agitado(a)">agitado(a)</SelectItem>
                 </SelectContent>
               </Select>
             </VitalField>

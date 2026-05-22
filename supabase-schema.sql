@@ -63,7 +63,9 @@ CREATE TABLE public."VitalSigns" (
   sensibilidad TEXT,
    observaciones_neurologicas TEXT,
    apreciacion_inicial TEXT,
-   estado_general TEXT,
+    estado_general TEXT,
+    colaboracion TEXT,
+    sopor_level TEXT,
    ventilatory_mode TEXT,
    apremio_ventilatorio TEXT,
    ruido_pulmonar TEXT,
@@ -167,3 +169,7 @@ CREATE POLICY "Acceso público ScaleAssessment" ON public."ScaleAssessment"
 
 CREATE POLICY "Acceso público Intervention" ON public."Intervention"
   FOR ALL USING (true) WITH CHECK (true);
+
+-- Migración: nuevas columnas para Inspección General
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS colaboracion TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS sopor_level TEXT;
