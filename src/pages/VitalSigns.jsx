@@ -618,29 +618,11 @@ export default function VitalSigns() {
             <CardContent className="p-6">
               <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
                 <Activity className="w-4 h-4 text-primary" />
-                Evaluación Final
+                Apreciación Final
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <VitalField icon={Brain} label="Estado general" color="text-purple-500">
-                  <Select value={form.evaluacion_estado_general} onValueChange={(v) => updateField("evaluacion_estado_general", v)}>
-                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Agitado(a)">Agitado(a)</SelectItem>
-                      <SelectItem value="Contenido(a)">Contenido(a)</SelectItem>
-                      <SelectItem value="Tranquilo(a)">Tranquilo(a)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </VitalField>
-                <VitalField icon={Activity} label="Posición en cama" color="text-primary">
-                  <Select value={form.posicion_cama} onValueChange={(v) => updateField("posicion_cama", v)}>
-                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Acostado(a) en cama 30°">Acostado(a) en cama 30°</SelectItem>
-                      <SelectItem value="Sedente en silla/sillón">Sedente en silla/sillón</SelectItem>
-                      <SelectItem value="Sedente borde cama">Sedente borde cama</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </VitalField>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-muted-foreground">Observaciones</Label>
+                <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
               </div>
             </CardContent>
           </Card>

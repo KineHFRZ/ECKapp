@@ -500,6 +500,10 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               </Select>
             </VitalField>
           </div>
+          <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Observaciones</Label>
+            <Textarea value={form.observaciones_vent} onChange={(e) => updateField("observaciones_vent", e.target.value)} placeholder="Observaciones respiratorias..." className="min-h-[60px]" />
+          </div>
           <div className="mt-4 pt-4 border-t border-border/50">
             <VitalField icon={Wind} label="IKCTV" color="text-teal-500">
               <Input type="number" value={form.ikctv} onChange={(e) => updateField("ikctv", e.target.value)} placeholder="0-24" />
@@ -703,30 +707,10 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
         <CardContent className="p-6">
           <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
             <Activity className="w-4 h-4 text-primary" />
-            Evaluación Final
+            Apreciación Final
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <VitalField icon={Brain} label="Estado general" color="text-purple-500">
-              <Select value={form.evaluacion_estado_general} onValueChange={(v) => updateField("evaluacion_estado_general", v)}>
-                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Agitado(a)">Agitado(a)</SelectItem>
-                  <SelectItem value="Contenido(a)">Contenido(a)</SelectItem>
-                  <SelectItem value="Tranquilo(a)">Tranquilo(a)</SelectItem>
-                </SelectContent>
-              </Select>
-            </VitalField>
-            <VitalField icon={Activity} label="Posición en cama" color="text-primary">
-              <Select value={form.posicion_cama} onValueChange={(v) => updateField("posicion_cama", v)}>
-                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Acostado(a) en cama 30°">Acostado(a) en cama 30°</SelectItem>
-                  <SelectItem value="Sedente en silla/sillón">Sedente en silla/sillón</SelectItem>
-                  <SelectItem value="Sedente borde cama">Sedente borde cama</SelectItem>
-                </SelectContent>
-              </Select>
-            </VitalField>
-            <VitalField icon={Activity} label="Tolerancia" color="text-primary">
+            <VitalField icon={Activity} label="Tolerancia a la Sesión" color="text-primary">
               <Select value={form.tolerancia} onValueChange={(v) => updateField("tolerancia", v)}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                 <SelectContent>
@@ -736,6 +720,10 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                 </SelectContent>
               </Select>
             </VitalField>
+            <div className="md:col-span-2 space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground">Observaciones</Label>
+              <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
+            </div>
             <VitalField icon={Activity} label="%FCRut" color="text-primary">
               <div className="flex items-center gap-1">
                 <Input type="number" min="0" max="100" value={form.porcentaje_fc_rut} onChange={(e) => updateField("porcentaje_fc_rut", e.target.value)} placeholder="0" className="w-20" />
@@ -754,10 +742,6 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                 <span className="text-sm text-muted-foreground">/10</span>
               </div>
             </VitalField>
-          </div>
-          <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
-            <Label className="text-xs font-medium text-muted-foreground">Observaciones</Label>
-            <Textarea value={form.observaciones_vent} onChange={(e) => updateField("observaciones_vent", e.target.value)} placeholder="Observaciones respiratorias..." className="min-h-[60px]" />
           </div>
         </CardContent>
       </Card>
@@ -800,9 +784,6 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                 <Input type="text" value={form.irox_final || ""} readOnly className="bg-muted" placeholder="Calculado" />
               </VitalField>
             )}
-          </div>
-          <div className="space-y-1.5">
-            <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
           </div>
         </CardContent>
       </Card>
