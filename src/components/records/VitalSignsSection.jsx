@@ -473,7 +473,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               <Textarea value={form.observaciones_ausc} onChange={(e) => updateField("observaciones_ausc", e.target.value)} placeholder="Observaciones auscultación..." className="min-h-[80px]" />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-border/50">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-border/50">
             <VitalField icon={Stethoscope} label="Mecanismo de Tos" color="text-primary">
               <Select value={form.mecanismo_tos} onValueChange={(v) => updateField("mecanismo_tos", v)}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
@@ -492,17 +492,6 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                 <SelectContent>
                   <SelectItem value="No productiva">No productiva</SelectItem>
                   <SelectItem value="Productiva">Productiva</SelectItem>
-                </SelectContent>
-              </Select>
-            </VitalField>
-            <VitalField icon={Stethoscope} label="Secreciones" color="text-primary">
-              <Select value={form.secreciones} onValueChange={(v) => updateField("secreciones", v)}>
-                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Mucopurulentas">Mucopurulentas</SelectItem>
-                  <SelectItem value="Mucosas">Mucosas</SelectItem>
-                  <SelectItem value="Purulentas">Purulentas</SelectItem>
-                  <SelectItem value="Sin secreciones">Sin secreciones</SelectItem>
                 </SelectContent>
               </Select>
             </VitalField>
