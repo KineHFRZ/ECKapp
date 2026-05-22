@@ -28,7 +28,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   let line = "";
 
   if (form.apreciacion_inicial) {
-    const aprecParts = [`Se encuentra ${form.apreciacion_inicial}`];
+    const aprecParts = [form.apreciacion_inicial];
     if (form.gcs) aprecParts.push(`GCS ${form.gcs}/15`);
     if (form.sas) aprecParts.push(`SAS ${form.sas}/7`);
     if (form.s5q) aprecParts.push(`S5Q ${form.s5q}/5`);
@@ -141,6 +141,28 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.evaluacion_estado_general) quedaParts.push(form.evaluacion_estado_general);
   if (form.posicion_cama) quedaParts.push(form.posicion_cama);
   if (quedaParts.length > 0) lines.push(`Queda: ${quedaParts.join(", ")}.`);
+
+  const fssItems = [
+    { key: "fss_giro", label: "Giro" },
+    { key: "fss_sedente_bipedo", label: "Transición Sedente a Bípedo" },
+    { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
+    { key: "fss_marcha", label: "Marcha" },
+    { key: "fss_sedente_apoyo", label: "Sedente Sin Apoyo" },
+  ];
+  const fssFilled = fssItems.some((item) => form[item.key]);
+  if (fssFilled) {
+    if (form.fss_icu_no_valorable) {
+      lines.push("Evaluación FSS-ICU: No valorable.");
+    } else {
+      const fssTotal = fssItems.reduce((sum, item) => sum + (parseInt(form[item.key]) || 0), 0);
+      lines.push("Evaluación FSS-ICU:");
+      fssItems.forEach((item) => {
+        const val = form[item.key];
+        lines.push(`  - ${item.label}: ${val != null && val !== "" ? val : "—"}/7`);
+      });
+      lines.push(`  - Puntaje Total: ${fssTotal}/35`);
+    }
+  }
 
   const eck = eckScores || latestScale;
   if (eck) {

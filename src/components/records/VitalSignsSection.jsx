@@ -80,6 +80,7 @@ const initialForm = {
   irox: "", pam: "", ikctv: "", flujo_naricera: "",
   fuerza_muscular: "", rom: "", pto: "", asistencia_transiciones: "", secreciones: "",
   fss_icu: "", fss_icu_no_valorable: false,
+  fss_giro: "", fss_sedente_bipedo: "", fss_supino_sedente: "", fss_marcha: "", fss_sedente_apoyo: "",
   tolerancia: "", porcentaje_fc_rut: "", disnea: "", ssf: "",
   tono_muscular: "", sensibilidad: "", observaciones_neurologicas: "",
   distancia_recorrido: "", tipo_aspiracion: "", cantidad_aspiracion: "",   observacion_inicial: "", observacion_final: "",
@@ -171,7 +172,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
 
   const handleSave = () => {
     if (!patientId) { toast.error("Selecciona un paciente"); return; }
-    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final"];
+    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final", "fss_giro", "fss_sedente_bipedo", "fss_supino_sedente", "fss_marcha", "fss_sedente_apoyo"];
     const stringFields = ["apreciacion_inicial", "estado_general", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => { if (form[f]) parsed[f] = Number(form[f]); });
@@ -480,15 +481,38 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
             <VitalField icon={Wind} label="IKCTV" color="text-teal-500">
               <Input type="number" value={form.ikctv} onChange={(e) => updateField("ikctv", e.target.value)} placeholder="0-24" />
             </VitalField>
-            <VitalField icon={Activity} label="FSS - ICU" color="text-primary">
-              <div className="space-y-2">
-                <Input type="number" value={form.fss_icu} onChange={(e) => updateField("fss_icu", e.target.value)} placeholder="0-35" min="0" max="35" disabled={form.fss_icu_no_valorable} />
-                <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                  <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) updateField("fss_icu", ""); }} className="accent-primary" />
-                  No valorable
-                </label>
-              </div>
-            </VitalField>
+          </div>
+          <div className="mt-4 pt-4 border-t border-border/50">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-semibold text-primary flex items-center gap-1.5">
+                <Activity className="w-4 h-4" /> FSS - ICU
+              </h4>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) { ["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].forEach((k) => updateField(k, "")); } }} className="accent-primary" />
+                No valorable
+              </label>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              {[
+                { key: "fss_giro", label: "Giro" },
+                { key: "fss_sedente_bipedo", label: "Transición Sedente a Bípedo" },
+                { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
+                { key: "fss_marcha", label: "Marcha" },
+                { key: "fss_sedente_apoyo", label: "Sedente Sin Apoyo" },
+              ].map((item) => {
+                const val = parseInt(form[item.key]) || 0;
+                const total = ["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0);
+                return (
+                  <div key={item.key} className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">{item.label}</Label>
+                    <Input type="number" min="0" max="7" value={form[item.key]} onChange={(e) => updateField(item.key, e.target.value)} placeholder="0-7" disabled={form.fss_icu_no_valorable} className="text-sm" />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 text-right">
+              Total: {["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0)}/35
+            </p>
           </div>
         </CardContent>
       </Card>
