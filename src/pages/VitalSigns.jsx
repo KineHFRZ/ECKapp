@@ -362,7 +362,6 @@ export default function VitalSigns() {
                     </SelectContent>
                   </Select>
                 </VitalField>
-              </div>
             </CardContent>
           </Card>
 
