@@ -227,7 +227,7 @@ export default function VitalSigns() {
 
           <Card className="border-border/50">
             <CardContent className="p-6">
-              <h3 className="font-semibold mb-5 text-foreground">Inspección General</h3>
+              <h3 className="font-semibold mb-5 text-foreground">Apreciación Inicial</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                 <VitalField icon={Brain} label="Apreciación Inicial" color="text-purple-500">
                   <Select value={form.apreciacion_inicial} onValueChange={(v) => { updateField("apreciacion_inicial", v); if (v !== "Sopor") updateField("sopor_level", ""); }}>
@@ -282,6 +282,10 @@ export default function VitalSigns() {
               <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
                 <Label>Observación Inicial</Label>
                 <Textarea value={form.observacion_inicial} onChange={(e) => updateField("observacion_inicial", e.target.value)} placeholder="Observación inicial..." className="min-h-[60px]" />
+              </div>
+              <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
+                <Label>Observación Final</Label>
+                <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
               </div>
             </CardContent>
           </Card>
@@ -611,19 +615,6 @@ export default function VitalSigns() {
                     ))}
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border/50">
-            <CardContent className="p-6">
-              <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
-                <Activity className="w-4 h-4 text-primary" />
-                Apreciación Final
-              </h3>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground">Observaciones</Label>
-                <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
               </div>
             </CardContent>
           </Card>
