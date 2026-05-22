@@ -790,7 +790,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                 <div key={item.key} className="p-4 rounded-xl bg-card border border-border/50 space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="font-semibold text-xs text-foreground">{item.label}</h4>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${val == null ? "bg-gray-400" : val <= 2 ? "bg-green-500" : val <= 4 ? "bg-yellow-500" : val <= 6 ? "bg-orange-500" : "bg-red-600"}`}>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${val == null ? "bg-gray-400" : val <= 1 ? "bg-red-500" : val <= 3 ? "bg-orange-500" : val <= 5 ? "bg-yellow-500" : "bg-green-600"}`}>
                       {val ?? "—"}/7
                     </span>
                   </div>
