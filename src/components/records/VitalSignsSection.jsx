@@ -30,9 +30,9 @@ const oxygenOptions = [
   { value: "vmi", label: "VMI" },
 ];
 
-const ruidoPulmonarOptions = ["Abolido", "Disminuido", "Presente"];
-const ruidoPulmonarZonaOptions = ["Anterior", "Ápices", "Bibasal", "Bilateral", "Posterior"];
-const ruidosAgregadosOptions = ["Crepitos", "Estertor", "Roncus", "Sibilancias", "Sin Ruidos Agregados"];
+const ruidoPulmonarOptions = ["Presente", "Disminuido", "Abolido"];
+const locationsList = ["biapical", "bibasal", "ápice derecho", "ápice izquierdo", "base derecha", "base izquierda", "hemicampo derecho", "hemicampo izquierdo", "bilateral", "posterobasal derecho", "posterobasal izquierdo"];
+const ruidosAgregadosOptions = ["Crepitos", "Estertor", "Roncus", "Sibilancias", "Ruido Respiratorio Bronquial", "Sin Ruidos Agregados"];
 
 const movilidadOptions = [
   "Evaluación Kinésica",
@@ -77,7 +77,8 @@ const initialForm = {
   mecanismo_tos: "", caracteristicas_tos: "",
   evaluacion_estado_general: "", posicion_cama: "",
   ruido_pulmonar: "", ruido_pulmonar_zona: "", ruidos_agregados: "",
-  irox: "", pam: "", ikctv: "", flujo_naricera: "",
+  ruido_pulmonar_loc: "", ruidos_agregados_loc: "{}",
+  irox: "", pam: "", ikctv: "", flujo_naricera: "",   observaciones_vent: "", observaciones_ausc: "",
   fuerza_muscular: "", rom: "", pto: "", asistencia_transiciones: "", secreciones: "",
   fss_icu: "", fss_icu_no_valorable: false,
   fss_giro: "", fss_sedente_bipedo: "", fss_supino_sedente: "", fss_marcha: "", fss_sedente_apoyo: "",
@@ -191,7 +192,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
   const handleSave = () => {
     if (!patientId) { toast.error("Selecciona un paciente"); return; }
     const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final", "fss_giro", "fss_sedente_bipedo", "fss_supino_sedente", "fss_marcha", "fss_sedente_apoyo", "cnaf_flow_final", "irox_final"];
-    const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas"];
+    const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "ruido_pulmonar_loc", "ruidos_agregados_loc", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas", "observaciones_vent", "observaciones_ausc"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => { if (form[f]) parsed[f] = Number(form[f]); });
     stringFields.forEach((f) => { if (form[f]) parsed[f] = form[f]; });
@@ -389,29 +390,88 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <VitalField icon={Stethoscope} label="Ruido Pulmonar" color="text-primary">
-              <Select value={form.ruido_pulmonar} onValueChange={(v) => updateField("ruido_pulmonar", v)}>
+              <Select value={form.ruido_pulmonar} onValueChange={(v) => { updateField("ruido_pulmonar", v); if (v !== "Disminuido") updateField("ruido_pulmonar_loc", ""); }}>
                 <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                 <SelectContent>
                   {ruidoPulmonarOptions.map((opt) => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
                 </SelectContent>
               </Select>
-            </VitalField>
-            <VitalField icon={Stethoscope} label="Localización" color="text-primary">
-              <Select value={form.ruido_pulmonar_zona} onValueChange={(v) => updateField("ruido_pulmonar_zona", v)}>
-                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  {ruidoPulmonarZonaOptions.map((opt) => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              {form.ruido_pulmonar === "Disminuido" && (
+                <div className="mt-2 space-y-1">
+                  <span className="text-[10px] text-muted-foreground block">Locaciones:</span>
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                    {locationsList.map((loc) => {
+                      const arr = (form.ruido_pulmonar_loc || "").split(",").filter(Boolean);
+                      const checked = arr.includes(loc);
+                      return (
+                        <label key={loc} className="flex items-center gap-1.5 text-[11px] cursor-pointer">
+                          <input type="checkbox" checked={checked} onChange={() => {
+                            const next = checked ? arr.filter((x) => x !== loc) : [...arr, loc];
+                            updateField("ruido_pulmonar_loc", next.join(","));
+                          }} className="accent-primary" />
+                          {loc}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </VitalField>
             <VitalField icon={Stethoscope} label="Ruidos Agregados" color="text-primary">
-              <Select value={form.ruidos_agregados} onValueChange={(v) => updateField("ruidos_agregados", v)}>
-                <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
-                <SelectContent>
-                  {ruidosAgregadosOptions.map((opt) => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              {ruidosAgregadosOptions.map((opt) => {
+                const raArr = (form.ruidos_agregados || "").split(",").filter(Boolean);
+                const selected = raArr.includes(opt);
+                const locMap = JSON.parse(form.ruidos_agregados_loc || "{}");
+                return (
+                  <div key={opt} className="mb-1.5">
+                    <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                      <input type="checkbox" checked={selected} onChange={() => {
+                        const next = selected ? raArr.filter((x) => x !== opt) : [...raArr, opt];
+                        if (opt === "Sin Ruidos Agregados" && !selected) {
+                          updateField("ruidos_agregados", "Sin Ruidos Agregados");
+                          updateField("ruidos_agregados_loc", "{}");
+                        } else {
+                          const filtered = next.filter((x) => x !== "Sin Ruidos Agregados");
+                          updateField("ruidos_agregados", filtered.join(","));
+                          if (!selected) {
+                            const newLoc = { ...locMap, [opt]: "" };
+                            updateField("ruidos_agregados_loc", JSON.stringify(newLoc));
+                          } else {
+                            const { [opt]: _, ...rest } = locMap;
+                            updateField("ruidos_agregados_loc", JSON.stringify(rest));
+                          }
+                        }
+                      }} className="accent-primary" />
+                      {opt}
+                    </label>
+                    {selected && opt !== "Sin Ruidos Agregados" && (
+                      <div className="ml-4 mt-1 grid grid-cols-2 gap-x-2 gap-y-0.5">
+                        {locationsList.map((loc) => {
+                          const locArr = (locMap[opt] || "").split(",").filter(Boolean);
+                          const locChecked = locArr.includes(loc);
+                          return (
+                            <label key={loc} className="flex items-center gap-1.5 text-[10px] cursor-pointer">
+                              <input type="checkbox" checked={locChecked} onChange={() => {
+                                const newLocArr = locChecked ? locArr.filter((x) => x !== loc) : [...locArr, loc];
+                                const newLocMap = { ...locMap, [opt]: newLocArr.join(",") };
+                                updateField("ruidos_agregados_loc", JSON.stringify(newLocMap));
+                              }} className="accent-primary" />
+                              {loc}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </VitalField>
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-1.5 text-xs font-medium">
+                <Stethoscope className="w-3.5 h-3.5 text-primary" /> Observaciones
+              </Label>
+              <Textarea value={form.observaciones_ausc} onChange={(e) => updateField("observaciones_ausc", e.target.value)} placeholder="Observaciones auscultación..." className="min-h-[80px]" />
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-border/50">
             <VitalField icon={Stethoscope} label="Mecanismo de Tos" color="text-primary">
@@ -666,11 +726,15 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               </div>
             </VitalField>
           </div>
+          <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
+            <Label className="text-xs font-medium text-muted-foreground">Observaciones</Label>
+            <Textarea value={form.observaciones_vent} onChange={(e) => updateField("observaciones_vent", e.target.value)} placeholder="Observaciones respiratorias..." className="min-h-[60px]" />
+          </div>
         </CardContent>
       </Card>
 
       <Card className="border-border/50">
-        <CardContent className="p-6 space-y-4">
+        <CardContent className="p-6">
           <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
             <Heart className="w-4 h-4 text-primary" />
             Observación Final

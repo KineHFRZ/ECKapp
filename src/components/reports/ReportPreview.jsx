@@ -238,6 +238,10 @@ export default function ReportPreview({ patient, vitals, scales, interventions }
                 oxygen_support_final: v.oxygen_support_final || "",
                 cnaf_flow_final: v.cnaf_flow_final || "",
                 irox_final: v.irox_final || "",
+                observaciones_vent: v.observaciones_vent || "",
+                observaciones_ausc: v.observaciones_ausc || "",
+                ruido_pulmonar_loc: v.ruido_pulmonar_loc || "",
+                ruidos_agregados_loc: v.ruidos_agregados_loc || "{}",
               };
 
               const text = generateClinicalRecord({

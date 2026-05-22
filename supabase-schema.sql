@@ -84,6 +84,10 @@ CREATE TABLE public."VitalSigns" (
    oxygen_support_final TEXT,
    cnaf_flow_final NUMERIC,
    irox_final NUMERIC,
+   observaciones_vent TEXT,
+   observaciones_ausc TEXT,
+   ruido_pulmonar_loc TEXT,
+   ruidos_agregados_loc TEXT,
    distancia_recorrido TEXT,
    tipo_aspiracion TEXT,
    cantidad_aspiracion TEXT,
@@ -179,3 +183,7 @@ ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS sopor_level TEXT;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS oxygen_support_final TEXT;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS cnaf_flow_final NUMERIC;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS irox_final NUMERIC;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS observaciones_vent TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS observaciones_ausc TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS ruido_pulmonar_loc TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS ruidos_agregados_loc TEXT;
