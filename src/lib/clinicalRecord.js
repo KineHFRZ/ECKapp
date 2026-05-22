@@ -48,7 +48,8 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (apremioParts.length > 0) line += ` ${apremioParts.join(", ")}.`;
 
   if (form.observacion_inicial && form.observacion_inicial.trim()) {
-    line += ` ${form.observacion_inicial.trim().toLowerCase()}`;
+    const obsInit = form.observacion_inicial.trim().toLowerCase();
+    line += ` ${obsInit.charAt(0).toUpperCase() + obsInit.slice(1)}`;
   }
 
   if (line) lines.push(line);
@@ -150,7 +151,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   }
   if (form.tono_muscular) funcParts.push(`Tono muscular: ${form.tono_muscular.toLowerCase()}`);
   if (form.sensibilidad) funcParts.push(`Sensibilidad: ${form.sensibilidad.toLowerCase()}`);
-  if (form.observaciones_neurologicas) funcParts.push(`Obs. neurológicas: ${form.observaciones_neurologicas.toLowerCase()}`);
+  if (form.observaciones_neurologicas) funcParts.push(`Observaciones: ${form.observaciones_neurologicas.toLowerCase()}`);
   if (funcParts.length > 0) lines.push(`${funcParts.join(", ")}.`);
 
   if (techniques && techniques.length > 0) {
@@ -192,7 +193,8 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   else if (fssTotal > 0) lines.push(`FSS-ICU: ${fssTotal}/35 ptos.`);
 
   if (form.observacion_final && form.observacion_final.trim()) {
-    lines.push(`${form.observacion_final.trim().toLowerCase()}`);
+    const obsFinal = form.observacion_final.trim().toLowerCase();
+    lines.push(`${obsFinal.charAt(0).toUpperCase() + obsFinal.slice(1)}`);
   }
 
   const finalVitalParts = [];
