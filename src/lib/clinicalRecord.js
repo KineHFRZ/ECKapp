@@ -133,8 +133,22 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.ikctv) evalLine += `IKCTV ${form.ikctv} ptos.`;
 
   const funcParts = [];
-  if (form.fuerza_muscular) funcParts.push(`Fuerza muscular: ${form.fuerza_muscular}`);
-  if (form.rom) funcParts.push(`ROM: ${form.rom}`);
+  if (form.fuerza_muscular) {
+    let fm = `Fuerza muscular: ${form.fuerza_muscular}`;
+    if (form.fuerza_muscular === "Alterada" && form.fuerza_muscular_loc) {
+      const locs = form.fuerza_muscular_loc.split(",").filter(Boolean);
+      if (locs.length > 0) fm += ` en ${locs.join(", ")}`;
+    }
+    funcParts.push(fm);
+  }
+  if (form.rom) {
+    let r = `ROM: ${form.rom}`;
+    if (form.rom === "Alterado" && form.rom_loc) {
+      const locs = form.rom_loc.split(",").filter(Boolean);
+      if (locs.length > 0) r += ` en ${locs.join(", ")}`;
+    }
+    funcParts.push(r);
+  }
   if (form.tono_muscular) funcParts.push(`tono muscular: ${form.tono_muscular}`);
   if (form.sensibilidad) funcParts.push(`sensibilidad: ${form.sensibilidad}`);
   if (form.observaciones_neurologicas) funcParts.push(`obs. neurológicas: ${form.observaciones_neurologicas}`);

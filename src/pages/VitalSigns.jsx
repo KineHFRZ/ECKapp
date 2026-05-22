@@ -35,16 +35,17 @@ const locationsList = ["biapical", "bibasal", "ápice derecho", "ápice izquierd
 const ruidosAgregadosOptions = ["Crepitos", "Estertor", "Roncus", "Sibilancias", "Ruido Respiratorio Bronquial", "Sin Ruidos Agregados"];
 
 const movilidadOptions = [
-"Bípedo",
-"Equilibrio dinámico o estático",
-"Evaluación Kinésica",
-"Fortalecimiento muscular",
-"Marcha",
-"Movilización activa",
-"Movilización activa asistida",
-"Movilización pasiva",
-"Movilización resistida",
-"Sedente borde cama"];
+  "Evaluación Kinésica",
+  "Movilidad Pasiva",
+  "Movilidad Activa asistida",
+  "Movilidad Activa",
+  "Fortalecimiento Muscular",
+  "Ejercicios de equilibrio estático",
+  "Ejercicios de equilibrio dinámico",
+  "Sedente Borde Cama",
+  "Bipedo",
+  "Marcha",
+];
 
 const respiratoriaOptions = [
 "Aspiración de secreciones",
@@ -75,7 +76,9 @@ const initialForm = {
   ruido_pulmonar: "", ruido_pulmonar_zona: "", ruidos_agregados: "",
   ruido_pulmonar_loc: "", ruidos_agregados_loc: "{}",
   irox: "", pam: "", ikctv: "", flujo_naricera: "", observaciones_vent: "", observaciones_ausc: "",
-  fuerza_muscular: "", rom: "", pto: "", asistencia_transiciones: "", secreciones: "",
+  fuerza_muscular: "", fuerza_muscular_loc: "", rom: "", rom_loc: "", pto: "", asistencia_transiciones: "", secreciones: "",
+  sedente_comentario: "", bipedo_comentario: "", marcha_comentario: "",
+  tos_provocada_comentario: "", tos_asistida_comentario: "", tos_dirigida_comentario: "",
   observacion_inicial: "", observacion_final: "",
   fss_icu_no_valorable: false,
   fss_giro: "", fss_sedente_bipedo: "", fss_supino_sedente: "", fss_marcha: "", fss_sedente_apoyo: "",
@@ -186,7 +189,7 @@ export default function VitalSigns() {
   const handleSave = () => {
     if (!patientId) {toast.error("Selecciona un paciente");return;}
     const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "fss_giro", "fss_sedente_bipedo", "fss_supino_sedente", "fss_marcha", "fss_sedente_apoyo"];
-    const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "ruido_pulmonar_loc", "ruidos_agregados_loc", "fuerza_muscular", "rom", "pto", "asistencia_transiciones", "observacion_inicial", "observacion_final", "observaciones_vent", "observaciones_ausc"];
+    const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "ruido_pulmonar_loc", "ruidos_agregados_loc", "fuerza_muscular", "fuerza_muscular_loc", "rom", "rom_loc", "pto", "asistencia_transiciones", "observacion_inicial", "observacion_final", "observaciones_vent", "observaciones_ausc", "sedente_comentario", "bipedo_comentario", "marcha_comentario", "tos_provocada_comentario", "tos_asistida_comentario", "tos_dirigida_comentario"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => {if (form[f]) parsed[f] = Number(form[f]);});
     stringFields.forEach((f) => {if (form[f]) parsed[f] = form[f];});
@@ -505,24 +508,64 @@ export default function VitalSigns() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <VitalField icon={Activity} label="Fuerza muscular" color="text-primary">
-                  <Select value={form.fuerza_muscular} onValueChange={(v) => updateField("fuerza_muscular", v)}>
+                  <Select value={form.fuerza_muscular} onValueChange={(v) => { updateField("fuerza_muscular", v); if (v !== "Alterada") updateField("fuerza_muscular_loc", ""); }}>
                     <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Alterada">Alterada</SelectItem>
                       <SelectItem value="Conservada">Conservada</SelectItem>
+                      <SelectItem value="Alterada">Alterada</SelectItem>
                       <SelectItem value="No Evaluable">No Evaluable</SelectItem>
                     </SelectContent>
                   </Select>
+                  {form.fuerza_muscular === "Alterada" && (
+                    <div className="mt-2 space-y-1">
+                      <span className="text-[10px] text-muted-foreground block">Extremidades:</span>
+                      <div className="grid grid-cols-1 gap-x-2 gap-y-0.5">
+                        {["extremidad superior derecha", "extremidad superior izquierda", "extremidad inferior derecha", "extremidad inferior izquierda"].map((loc) => {
+                          const arr = (form.fuerza_muscular_loc || "").split(",").filter(Boolean);
+                          const checked = arr.includes(loc);
+                          return (
+                            <label key={loc} className="flex items-center gap-1.5 text-[11px] cursor-pointer">
+                              <input type="checkbox" checked={checked} onChange={() => {
+                                const next = checked ? arr.filter((x) => x !== loc) : [...arr, loc];
+                                updateField("fuerza_muscular_loc", next.join(","));
+                              }} className="accent-primary" />
+                              {loc}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </VitalField>
                 <VitalField icon={Activity} label="ROM" color="text-primary">
-                  <Select value={form.rom} onValueChange={(v) => updateField("rom", v)}>
+                  <Select value={form.rom} onValueChange={(v) => { updateField("rom", v); if (v !== "Alterado") updateField("rom_loc", ""); }}>
                     <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Alterado">Alterado</SelectItem>
                       <SelectItem value="Conservado">Conservado</SelectItem>
+                      <SelectItem value="Alterado">Alterado</SelectItem>
                       <SelectItem value="No Evaluable">No Evaluable</SelectItem>
                     </SelectContent>
                   </Select>
+                  {form.rom === "Alterado" && (
+                    <div className="mt-2 space-y-1">
+                      <span className="text-[10px] text-muted-foreground block">Extremidades:</span>
+                      <div className="grid grid-cols-1 gap-x-2 gap-y-0.5">
+                        {["extremidad superior derecha", "extremidad superior izquierda", "extremidad inferior derecha", "extremidad inferior izquierda"].map((loc) => {
+                          const arr = (form.rom_loc || "").split(",").filter(Boolean);
+                          const checked = arr.includes(loc);
+                          return (
+                            <label key={loc} className="flex items-center gap-1.5 text-[11px] cursor-pointer">
+                              <input type="checkbox" checked={checked} onChange={() => {
+                                const next = checked ? arr.filter((x) => x !== loc) : [...arr, loc];
+                                updateField("rom_loc", next.join(","));
+                              }} className="accent-primary" />
+                              {loc}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </VitalField>
                 <VitalField icon={Activity} label="PTO" color="text-primary">
                   <Select value={form.pto} onValueChange={(v) => updateField("pto", v)}>

@@ -242,6 +242,14 @@ export default function ReportPreview({ patient, vitals, scales, interventions }
                 observaciones_ausc: v.observaciones_ausc || "",
                 ruido_pulmonar_loc: v.ruido_pulmonar_loc || "",
                 ruidos_agregados_loc: v.ruidos_agregados_loc || "{}",
+                fuerza_muscular_loc: v.fuerza_muscular_loc || "",
+                rom_loc: v.rom_loc || "",
+                sedente_comentario: v.sedente_comentario || "",
+                bipedo_comentario: v.bipedo_comentario || "",
+                marcha_comentario: v.marcha_comentario || "",
+                tos_provocada_comentario: v.tos_provocada_comentario || "",
+                tos_asistida_comentario: v.tos_asistida_comentario || "",
+                tos_dirigida_comentario: v.tos_dirigida_comentario || "",
               };
 
               const text = generateClinicalRecord({

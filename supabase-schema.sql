@@ -88,6 +88,14 @@ CREATE TABLE public."VitalSigns" (
    observaciones_ausc TEXT,
    ruido_pulmonar_loc TEXT,
    ruidos_agregados_loc TEXT,
+   fuerza_muscular_loc TEXT,
+   rom_loc TEXT,
+   sedente_comentario TEXT,
+   bipedo_comentario TEXT,
+   marcha_comentario TEXT,
+   tos_provocada_comentario TEXT,
+   tos_asistida_comentario TEXT,
+   tos_dirigida_comentario TEXT,
    distancia_recorrido TEXT,
    tipo_aspiracion TEXT,
    cantidad_aspiracion TEXT,
@@ -187,3 +195,11 @@ ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS observaciones_vent TEXT
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS observaciones_ausc TEXT;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS ruido_pulmonar_loc TEXT;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS ruidos_agregados_loc TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS fuerza_muscular_loc TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS rom_loc TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS sedente_comentario TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS bipedo_comentario TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS marcha_comentario TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS tos_provocada_comentario TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS tos_asistida_comentario TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS tos_dirigida_comentario TEXT;
