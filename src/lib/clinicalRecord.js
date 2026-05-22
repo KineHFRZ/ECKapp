@@ -129,8 +129,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   if (respLine) lines.push(`${respLine}.`);
 
-  let evalLine = "";
-  if (form.ikctv) evalLine += `IKCTV ${form.ikctv} ptos.`;
+  if (form.ikctv) lines.push(`IKCTV ${form.ikctv} ptos.`);
 
   const funcParts = [];
   if (form.fuerza_muscular) {
@@ -151,10 +150,8 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   }
   if (form.tono_muscular) funcParts.push(`tono muscular: ${form.tono_muscular.toLowerCase()}`);
   if (form.sensibilidad) funcParts.push(`sensibilidad: ${form.sensibilidad.toLowerCase()}`);
-  if (form.observaciones_neurologicas) funcParts.push(`obs. neurológicas: ${form.observaciones_neurologicas}`);
-  if (funcParts.length > 0) evalLine += ` ${funcParts.join(", ")}.`;
-
-  if (evalLine) lines.push(evalLine);
+  if (form.observaciones_neurologicas) funcParts.push(`obs. neurológicas: ${form.observaciones_neurologicas.toLowerCase()}`);
+  if (funcParts.length > 0) lines.push(`${funcParts.join(", ")}.`);
 
   if (techniques && techniques.length > 0) {
     const techDisplay = techniques.map((t) => {

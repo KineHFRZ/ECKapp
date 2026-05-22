@@ -448,7 +448,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                       }} className="accent-primary" />
                       {opt}
                     </label>
-                    {selected && opt !== "Sin Ruidos Agregados" && (
+                    {selected && opt !== "Sin Ruidos Agregados" && opt !== "Estertor" && (
                       <div className="ml-4 mt-1 grid grid-cols-2 gap-x-2 gap-y-0.5">
                         {locationsList.map((loc) => {
                           const locArr = (locMap[opt] || "").split(",").filter(Boolean);
