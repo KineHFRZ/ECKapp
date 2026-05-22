@@ -85,7 +85,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     let rp = `ruido pulmonar ${form.ruido_pulmonar.toLowerCase()}`;
     if (form.ruido_pulmonar === "Disminuido" && form.ruido_pulmonar_loc) {
       const locs = form.ruido_pulmonar_loc.split(",").filter(Boolean);
-      if (locs.length > 0) rp += ` en ${locs.join(", ")}`;
+      if (locs.length > 0) rp += ` ${locs.join(", ")}`;
     }
     auscParts.push(rp);
   }
@@ -96,7 +96,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
       const raFormatted = raArr.map((r) => {
         const locsStr = locMap[r] || "";
         const locs = locsStr.split(",").filter(Boolean);
-        if (locs.length > 0) return `${r.toLowerCase()} en ${locs.join(", ")}`;
+        if (locs.length > 0) return `${r.toLowerCase()} ${locs.join(", ")}`;
         return r.toLowerCase();
       });
       auscParts.push(raFormatted.join(", "));
@@ -165,6 +165,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
       }
       if (base === "bipedo" && form.bipedo_comentario) return `${base} (${form.bipedo_comentario.toLowerCase()})`;
       if (base === "marcha" && form.marcha_comentario) return `${base} (${form.marcha_comentario.toLowerCase()})`;
+      if ((base === "tos provocada" || base === "tos asistida" || base === "tos dirigida") && form[`${base.replace(/\s+/g, "_")}_comentario`]) return `${base} (${form[`${base.replace(/\s+/g, "_")}_comentario`].toLowerCase()})`;
       if (base === "aspiración de secreciones" || base === "aspiracion de secreciones") {
         if (form.aspiracion_comentario) return `${base} (${form.aspiracion_comentario.toLowerCase()})`;
         return base;

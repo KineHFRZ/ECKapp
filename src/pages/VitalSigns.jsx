@@ -37,6 +37,7 @@ const ruidosAgregadosOptions = ["Crepitos", "Estertor", "Roncus", "Sibilancias",
 const movilidadOptions = [
   "Evaluación Kinésica",
   "Movilidad Pasiva",
+  "Flexibilización",
   "Movilidad Activa asistida",
   "Movilidad Activa",
   "Fortalecimiento Muscular",
