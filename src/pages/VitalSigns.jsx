@@ -81,7 +81,7 @@ const initialForm = {
   tos_provocada_comentario: "", tos_asistida_comentario: "", tos_dirigida_comentario: "",
   observacion_inicial: "", observacion_final: "",
   fss_icu_no_valorable: false,
-  fss_giro: "", fss_sedente_bipedo: "", fss_supino_sedente: "", fss_marcha: "", fss_sedente_apoyo: "",
+  fss_giro: "", fss_supino_sedente: "", fss_sedente_borde_cama: "", fss_bipedo: "", fss_marcha: "",
 };
 
 function VitalField({ icon: Icon, label, children, color }) {
@@ -188,7 +188,7 @@ export default function VitalSigns() {
 
   const handleSave = () => {
     if (!patientId) {toast.error("Selecciona un paciente");return;}
-    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "fss_giro", "fss_sedente_bipedo", "fss_supino_sedente", "fss_marcha", "fss_sedente_apoyo"];
+    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "fss_giro", "fss_supino_sedente", "fss_sedente_borde_cama", "fss_bipedo", "fss_marcha"];
     const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "ruido_pulmonar_loc", "ruidos_agregados_loc", "fuerza_muscular", "fuerza_muscular_loc", "rom", "rom_loc", "pto", "asistencia_transiciones", "observacion_inicial", "observacion_final", "observaciones_vent", "observaciones_ausc", "sedente_comentario", "bipedo_comentario", "marcha_comentario", "tos_provocada_comentario", "tos_asistida_comentario", "tos_dirigida_comentario"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => {if (form[f]) parsed[f] = Number(form[f]);});
@@ -330,17 +330,17 @@ export default function VitalSigns() {
                     <Activity className="w-4 h-4" /> FSS - ICU
                   </h4>
                   <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                    <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) { ["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].forEach((k) => updateField(k, "")); } }} className="accent-primary" />
+                    <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) { ["fss_giro","fss_supino_sedente","fss_sedente_borde_cama","fss_bipedo","fss_marcha"].forEach((k) => updateField(k, "")); } }} className="accent-primary" />
                     No valorable
                   </label>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                   {[
                     { key: "fss_giro", label: "Giro" },
-                    { key: "fss_sedente_bipedo", label: "Transición Sedente a Bípedo" },
                     { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
+                    { key: "fss_sedente_borde_cama", label: "Sedente Borde Cama" },
+                    { key: "fss_bipedo", label: "Bipedo" },
                     { key: "fss_marcha", label: "Marcha" },
-                    { key: "fss_sedente_apoyo", label: "Sedente Sin Apoyo" },
                   ].map((item) => (
                     <div key={item.key} className="space-y-1">
                       <Label className="text-xs text-muted-foreground">{item.label}</Label>
@@ -349,7 +349,7 @@ export default function VitalSigns() {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground mt-2 text-right">
-                  Total: {["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0)}/35
+                  Total: {["fss_giro","fss_supino_sedente","fss_sedente_borde_cama","fss_bipedo","fss_marcha"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0)}/35
                 </p>
               </div>
                 <VitalField icon={Wind} label="Soporte O₂" color="text-teal-500">

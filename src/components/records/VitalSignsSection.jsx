@@ -85,7 +85,7 @@ const initialForm = {
   sedente_comentario: "", bipedo_comentario: "", marcha_comentario: "",
   tos_provocada_comentario: "", tos_asistida_comentario: "", tos_dirigida_comentario: "",
   fss_icu: "", fss_icu_no_valorable: false,
-  fss_giro: "", fss_sedente_bipedo: "", fss_supino_sedente: "", fss_marcha: "", fss_sedente_apoyo: "",
+  fss_giro: "", fss_supino_sedente: "", fss_sedente_borde_cama: "", fss_bipedo: "", fss_marcha: "",
   tolerancia: "", porcentaje_fc_rut: "", disnea: "", ssf: "",
   tono_muscular: "", sensibilidad: "", observaciones_neurologicas: "",
   distancia_recorrido: "", tipo_aspiracion: "", cantidad_aspiracion: "",   observacion_inicial: "", observacion_final: "",
@@ -195,7 +195,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
 
   const handleSave = () => {
     if (!patientId) { toast.error("Selecciona un paciente"); return; }
-    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final", "fss_giro", "fss_sedente_bipedo", "fss_supino_sedente", "fss_marcha", "fss_sedente_apoyo", "cnaf_flow_final", "irox_final"];
+    const numFields = ["heart_rate", "systolic_bp", "diastolic_bp", "spo2", "respiratory_rate", "temperature", "fio2", "pain_scale", "cnaf_flow", "irox", "pam", "ikctv", "fss_icu", "gcs", "sas", "s5q", "porcentaje_fc_rut", "disnea", "ssf", "fc_final", "fr_final", "spo2_final", "fio2_final", "flujo_o2_final", "fss_giro", "fss_supino_sedente", "fss_sedente_borde_cama", "fss_bipedo", "fss_marcha", "cnaf_flow_final", "irox_final"];
     const stringFields = ["apreciacion_inicial", "sopor_level", "colaboracion", "apremio_ventilatorio", "mecanismo_tos", "caracteristicas_tos", "secreciones", "evaluacion_estado_general", "posicion_cama", "ruido_pulmonar", "ruido_pulmonar_zona", "ruidos_agregados", "ruido_pulmonar_loc", "ruidos_agregados_loc", "fuerza_muscular", "fuerza_muscular_loc", "rom", "rom_loc", "pto", "asistencia_transiciones", "distancia_recorrido", "tipo_aspiracion", "cantidad_aspiracion", "observacion_inicial", "observacion_final", "tolerancia", "tono_muscular", "sensibilidad", "observaciones_neurologicas", "observaciones_vent", "observaciones_ausc", "sedente_comentario", "bipedo_comentario", "marcha_comentario", "tos_provocada_comentario", "tos_asistida_comentario", "tos_dirigida_comentario"];
     const parsed = { patient_id: patientId, record_date: new Date().toISOString() };
     numFields.forEach((f) => { if (form[f]) parsed[f] = Number(form[f]); });
@@ -814,39 +814,17 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
               <Activity className="w-4 h-4 text-primary" /> FSS - ICU
             </h3>
             <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-              <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) { ["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].forEach((k) => updateField(k, "")); } }} className="accent-primary" />
+              <input type="checkbox" checked={!!form.fss_icu_no_valorable} onChange={(e) => { updateField("fss_icu_no_valorable", e.target.checked); if (e.target.checked) { ["fss_giro","fss_supino_sedente","fss_sedente_borde_cama","fss_bipedo","fss_marcha"].forEach((k) => updateField(k, "")); } }} className="accent-primary" />
               No valorable
             </label>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               { key: "fss_giro", label: "Giro" },
-              { key: "fss_sedente_bipedo", label: "Transición Sedente a Bípedo" },
               { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
+              { key: "fss_sedente_borde_cama", label: "Sedente Borde Cama" },
+              { key: "fss_bipedo", label: "Bipedo" },
               { key: "fss_marcha", label: "Marcha" },
-            ].map((item) => {
-              const val = form[item.key] != null && form[item.key] !== "" ? parseInt(form[item.key]) : null;
-              return (
-                <div key={item.key} className="p-4 rounded-xl bg-card border border-border/50 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-semibold text-xs text-foreground">{item.label}</h4>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full text-white ${val == null ? "bg-gray-400" : val <= 2 ? "bg-green-500" : val <= 4 ? "bg-yellow-500" : val <= 6 ? "bg-orange-500" : "bg-red-600"}`}>
-                      {val ?? "—"}/7
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {[0,1,2,3,4,5,6,7].map((n) => (
-                      <button key={n} type="button" disabled={form.fss_icu_no_valorable}
-                        onClick={() => updateField(item.key, n.toString())}
-                        className={`h-9 rounded-lg text-sm font-bold transition-all border-2 ${val === n ? "bg-primary text-white border-primary shadow-sm" : "bg-muted text-muted-foreground border-transparent hover:border-primary/40"}`}
-                      >{n}</button>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-            {[
-              { key: "fss_sedente_apoyo", label: "Sedente Sin Apoyo" },
             ].map((item) => {
               const val = form[item.key] != null && form[item.key] !== "" ? parseInt(form[item.key]) : null;
               return (
@@ -870,7 +848,7 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
             })}
           </div>
           <p className="text-xs text-muted-foreground mt-3 text-right font-semibold">
-            Total: {["fss_giro","fss_sedente_bipedo","fss_supino_sedente","fss_marcha","fss_sedente_apoyo"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0)}/35
+            Total: {["fss_giro","fss_supino_sedente","fss_sedente_borde_cama","fss_bipedo","fss_marcha"].reduce((s, k) => s + (parseInt(form[k]) || 0), 0)}/35
           </p>
         </CardContent>
       </Card>

@@ -131,6 +131,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   let evalLine = "";
   if (form.ikctv) evalLine += `IKCTV ${form.ikctv} ptos.`;
+  if (form.pto && techniques && techniques.some((t) => t.toLowerCase().includes("sedente borde cama"))) evalLine += ` PTO ${form.pto}.`;
 
   const funcParts = [];
   if (form.fuerza_muscular) {
@@ -155,7 +156,17 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (funcParts.length > 0) evalLine += ` ${funcParts.join(", ")}.`;
 
   if (form.fss_icu_no_valorable) evalLine += ` FSS-ICU: No valorable.`;
-  else if (form.fss_icu) evalLine += ` FSS-ICU ${form.fss_icu} ptos.`;
+  else {
+    const fssItems = [
+      { key: "fss_giro", label: "Giro" },
+      { key: "fss_supino_sedente", label: "Transición Supino a Sedente" },
+      { key: "fss_sedente_borde_cama", label: "Sedente Borde Cama" },
+      { key: "fss_bipedo", label: "Bipedo" },
+      { key: "fss_marcha", label: "Marcha" },
+    ];
+    const fssTotal = fssItems.reduce((sum, item) => sum + (parseInt(form[item.key]) || 0), 0);
+    if (fssTotal > 0) evalLine += ` FSS-ICU: ${fssTotal}/35 ptos.`;
+  }
 
   if (evalLine) lines.push(evalLine);
 

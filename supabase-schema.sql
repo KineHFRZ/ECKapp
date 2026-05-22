@@ -203,3 +203,5 @@ ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS marcha_comentario TEXT;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS tos_provocada_comentario TEXT;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS tos_asistida_comentario TEXT;
 ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS tos_dirigida_comentario TEXT;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS fss_sedente_borde_cama NUMERIC;
+ALTER TABLE public."VitalSigns" ADD COLUMN IF NOT EXISTS fss_bipedo NUMERIC;
