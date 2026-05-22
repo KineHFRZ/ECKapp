@@ -106,7 +106,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   }
   if (auscParts.length > 0) {
     if (respLine) respLine += ", ";
-    respLine += `auscultación: ${auscParts.join(", ")}`;
+    respLine += `Auscultación: ${auscParts.join(", ")}`;
   }
 
   if (form.observaciones_ausc && form.observaciones_ausc.trim()) {
@@ -206,7 +206,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   if (form.flujo_o2_final) finalVitalParts.push(`flujo O₂ final ${form.flujo_o2_final} lpm`);
   if (form.oxygen_support_final) finalVitalParts.push(`con ${oxygenLabel(form.oxygen_support_final).toLowerCase()}`);
   if (form.cnaf_flow_final) finalVitalParts.push(`flujo CNAF final ${form.cnaf_flow_final} lpm`);
-  if (form.irox_final) finalVitalParts.push(`iROX final ${form.irox_final}`);
+  if (form.irox_final && form.oxygen_support_final === "cnaf") finalVitalParts.push(`iROX final ${form.irox_final}`);
   if (finalVitalParts.length > 0) lines.push(`${finalVitalParts.join(", ")}.`);
 
   const quedaParts = [];
