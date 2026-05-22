@@ -283,10 +283,6 @@ export default function VitalSigns() {
                 <Label>Observación Inicial</Label>
                 <Textarea value={form.observacion_inicial} onChange={(e) => updateField("observacion_inicial", e.target.value)} placeholder="Observación inicial..." className="min-h-[60px]" />
               </div>
-              <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
-                <Label>Observación Final</Label>
-                <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
-              </div>
             </CardContent>
           </Card>
 

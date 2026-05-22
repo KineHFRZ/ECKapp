@@ -323,10 +323,6 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
             <Label>Observación Inicial</Label>
             <Textarea value={form.observacion_inicial} onChange={(e) => updateField("observacion_inicial", e.target.value)} placeholder="Observación inicial..." className="min-h-[60px]" />
           </div>
-          <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
-            <Label>Observación Final</Label>
-            <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
-          </div>
         </CardContent>
       </Card>
 
@@ -721,17 +717,10 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                 <span className="text-sm text-muted-foreground">/10</span>
               </div>
             </VitalField>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border/50">
-        <CardContent className="p-6">
-          <h3 className="font-semibold mb-4 text-foreground flex items-center gap-2">
-            <Heart className="w-4 h-4 text-primary" />
-            Observación Final
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="md:col-span-2 space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground">Observaciones</Label>
+              <Textarea value={form.observacion_final} onChange={(e) => updateField("observacion_final", e.target.value)} placeholder="Observación final..." className="min-h-[60px]" />
+            </div>
             <VitalField icon={Heart} label="FC final (lpm)" color="text-red-500">
               <Input type="number" value={form.fc_final} onChange={(e) => updateField("fc_final", e.target.value)} placeholder="60-100" />
             </VitalField>

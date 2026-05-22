@@ -28,7 +28,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
   let line = "";
 
   if (form.apreciacion_inicial) {
-    const aprecVal = form.apreciacion_inicial === "Sopor" && form.sopor_level ? `Sopor (${form.sopor_level})` : form.apreciacion_inicial;
+    const aprecVal = form.apreciacion_inicial === "Sopor" && form.sopor_level ? `Sopor ${form.sopor_level}` : form.apreciacion_inicial;
     const aprecParts = [aprecVal];
     if (form.colaboracion) aprecParts.push(form.colaboracion.toLowerCase());
     if (form.gcs) aprecParts.push(`GCS ${form.gcs}/15`);
