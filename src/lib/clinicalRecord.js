@@ -55,47 +55,35 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   if (line) lines.push(line);
 
-  const hemoParts = [];
-  if (form.heart_rate) hemoParts.push(`FC ${form.heart_rate} lpm`);
+  const vitalsParts = [];
+  if (form.heart_rate) vitalsParts.push(`FC ${form.heart_rate} lpm`);
   if (form.systolic_bp && form.diastolic_bp)
-    hemoParts.push(`PA ${form.systolic_bp}/${form.diastolic_bp} mmHg`);
-  else if (form.systolic_bp) hemoParts.push(`PA sistólica ${form.systolic_bp} mmHg`);
-  if (form.pam) hemoParts.push(`PAM ${form.pam} mmHg`);
-  if (form.temperature) hemoParts.push(`T° ${form.temperature}°C`);
-  if (hemoParts.length > 0) lines.push(`${hemoParts.join(", ")}.`);
+    vitalsParts.push(`PA ${form.systolic_bp}/${form.diastolic_bp} mmHg`);
+  else if (form.systolic_bp) vitalsParts.push(`PA sistólica ${form.systolic_bp} mmHg`);
+  if (form.pam) vitalsParts.push(`PAM ${form.pam} mmHg`);
+  if (form.temperature) vitalsParts.push(`T° ${form.temperature}°C`);
+  if (form.respiratory_rate) vitalsParts.push(`FR ${form.respiratory_rate} rpm`);
+  if (form.spo2) vitalsParts.push(`SpO₂ ${form.spo2}%`);
+  if (form.fio2) vitalsParts.push(`FiO₂ ${form.fio2}%`);
+  if (form.oxygen_support) vitalsParts.push(`con ${oxygenLabel(form.oxygen_support).toLowerCase()}`);
+  if (form.cnaf_flow) vitalsParts.push(`flujo CNAF ${form.cnaf_flow} lpm`);
+  if (form.flujo_naricera) vitalsParts.push(`flujo O2 ${form.flujo_naricera} lpm`);
+  if (form.irox) vitalsParts.push(`iROX ${form.irox}`);
+  if (vitalsParts.length > 0) lines.push(`${vitalsParts.join(", ")}.`);
 
   if (form.pain_scale) lines.push(`${form.pain_scale}/10.`);
 
-  // Build continuous respiratory + auscultación + tos paragraph
-  let respLine = "";
-
-  const respParts = [];
-  if (form.respiratory_rate) respParts.push(`FR ${form.respiratory_rate} rpm`);
-  if (form.spo2) respParts.push(`SpO₂ ${form.spo2}%`);
-  if (form.fio2) respParts.push(`FiO₂ ${form.fio2}%`);
-  if (form.oxygen_support) respParts.push(`con ${oxygenLabel(form.oxygen_support).toLowerCase()}`);
-  if (form.cnaf_flow) respParts.push(`flujo CNAF ${form.cnaf_flow} lpm`);
-  if (form.flujo_naricera) respParts.push(`flujo O2 ${form.flujo_naricera} lpm`);
-  if (form.irox) respParts.push(`iROX ${form.irox}`);
-
-  if (respParts.length > 0) respLine += respParts.join(", ");
-
-  // Tos (on same line as respiratory)
-  if (form.mecanismo_tos || form.caracteristicas_tos || form.secreciones) {
-    const tosParts = [];
-    if (form.mecanismo_tos) tosParts.push(form.mecanismo_tos.toLowerCase());
-    if (form.caracteristicas_tos) tosParts.push(form.caracteristicas_tos.toLowerCase());
-    if (form.secreciones) tosParts.push(`secreciones ${form.secreciones.toLowerCase()}`);
-    if (respLine) respLine += ", ";
-    respLine += `evaluación de la tos: ${tosParts.join(", ")}`;
-  }
-
+  // Evaluación de la tos
+  const tosParts = [];
+  if (form.mecanismo_tos) tosParts.push(form.mecanismo_tos.toLowerCase());
+  if (form.caracteristicas_tos) tosParts.push(form.caracteristicas_tos.toLowerCase());
+  if (form.secreciones) tosParts.push(`secreciones ${form.secreciones.toLowerCase()}`);
+  let tosLine = tosParts.length > 0 ? `evaluación de la tos: ${tosParts.join(", ")}` : "";
   if (form.observaciones_vent && form.observaciones_vent.trim()) {
-    if (respLine) respLine += ", ";
-    respLine += form.observaciones_vent.trim().toLowerCase();
+    if (tosLine) tosLine += ", ";
+    tosLine += form.observaciones_vent.trim().toLowerCase();
   }
-
-  if (respLine) lines.push(`${respLine}.`);
+  if (tosLine) lines.push(`${tosLine}.`);
 
   // Auscultación as separate paragraph
   const auscParts = [];
