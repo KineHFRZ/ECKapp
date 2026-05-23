@@ -73,19 +73,17 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
 
   if (form.pain_scale) lines.push(`${form.pain_scale}/10.`);
 
-  // Evaluación de la tos
+  // Evaluación de la tos + Auscultación (same paragraph)
   const tosParts = [];
   if (form.mecanismo_tos) tosParts.push(form.mecanismo_tos.toLowerCase());
   if (form.caracteristicas_tos) tosParts.push(form.caracteristicas_tos.toLowerCase());
   if (form.secreciones) tosParts.push(`secreciones ${form.secreciones.toLowerCase()}`);
-  let tosLine = tosParts.length > 0 ? `evaluación de la tos: ${tosParts.join(", ")}` : "";
+  let tosLine = tosParts.length > 0 ? `Evaluación de la tos: ${tosParts.join(", ")}` : "";
   if (form.observaciones_vent && form.observaciones_vent.trim()) {
     if (tosLine) tosLine += ", ";
     tosLine += form.observaciones_vent.trim().toLowerCase();
   }
-  if (tosLine) lines.push(`${tosLine}.`);
 
-  // Auscultación as separate paragraph
   const auscParts = [];
   if (form.ruido_pulmonar) {
     let rp = `ruido pulmonar ${form.ruido_pulmonar.toLowerCase()}`;
@@ -111,12 +109,15 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
     }
   }
   if (auscParts.length > 0) {
-    let auscLine = `Auscultación: ${auscParts.join(", ")}`;
+    let auscStr = `Auscultación: ${auscParts.join(", ")}`;
     if (form.observaciones_ausc && form.observaciones_ausc.trim()) {
-      auscLine += `, ${form.observaciones_ausc.trim().toLowerCase()}`;
+      auscStr += `, ${form.observaciones_ausc.trim().toLowerCase()}`;
     }
-    lines.push(`${auscLine}.`);
+    if (tosLine) tosLine += ", ";
+    tosLine += auscStr;
   }
+
+  if (tosLine) lines.push(`${tosLine}.`);
 
   if (form.ikctv) lines.push(`IKCTV ${form.ikctv} ptos.`);
 
