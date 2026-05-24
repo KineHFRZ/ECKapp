@@ -270,14 +270,15 @@ export default function VitalSignsSection({ patientId, eckScores, onEckScoresCha
                 </SelectContent>
               </Select>
               {form.apreciacion_inicial === "Sopor" && (
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground">Nivel:</span>
-                  {["superficial", "medio", "profundo"].map((n) => (
-                    <button key={n} type="button"
-                      onClick={() => updateField("sopor_level", n)}
-                      className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all border ${form.sopor_level === n ? "bg-primary text-white border-primary" : "bg-muted text-muted-foreground border-transparent hover:border-primary/40"}`}
-                    >{n}</button>
-                  ))}
+                <div className="mt-2">
+                  <Select value={form.sopor_level} onValueChange={(v) => updateField("sopor_level", v)}>
+                    <SelectTrigger className="w-full text-xs h-7"><SelectValue placeholder="Nivel" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="superficial">superficial</SelectItem>
+                      <SelectItem value="medio">medio</SelectItem>
+                      <SelectItem value="profundo">profundo</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </VitalField>
