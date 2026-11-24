@@ -54,7 +54,6 @@ const respiratoriaOptions = [
 "Asistencia técnica con dispositivos para permeabilizar vía aérea",
 "Ejercicios de reexpansión pulmonar",
 "Manejo integral de vía aérea artificial",
-"Limpieza de endocánula",
 "Tos asistida",
 "Tos dirigida",
 "Tos provocada"];
@@ -79,7 +78,7 @@ const initialForm = {
   ruido_pulmonar_loc: "", ruidos_agregados_loc: "{}",
   irox: "", pam: "", ikctv: "", flujo_naricera: "", observaciones_vent: "", observaciones_ausc: "",
   fuerza_muscular: "", fuerza_muscular_loc: "", rom: "", rom_loc: "", pto: "", asistencia_transiciones: "", secreciones: "",
-  sedente_comentario: "", fortalecimiento_musuclar_comentario: "", bipedo_comentario: "", marcha_comentario: "",
+  sedente_comentario: "", bipedo_comentario: "", marcha_comentario: "",
   tos_provocada_comentario: "", tos_asistida_comentario: "", tos_dirigida_comentario: "",
   observacion_inicial: "", observacion_final: "",
   fss_icu_no_valorable: false,
