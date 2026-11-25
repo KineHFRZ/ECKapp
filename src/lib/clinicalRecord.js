@@ -153,6 +153,7 @@ export function generateClinicalRecord({ patient, form, techniques, eckScores, l
       }
       if (base === "bipedo" && form.bipedo_comentario) return `${base}, ${form.bipedo_comentario.toLowerCase()}`;
       if (base === "marcha" && form.marcha_comentario) return `${base}, ${form.marcha_comentario.toLowerCase()}`;
+      if (base === "fortalecimiento muscular" && form.fortalecimiento_muscular_comentario) return `${base}, ${form.fortalecimiento_muscular_comentario.toLowerCase()}`;
       if ((base === "tos provocada" || base === "tos asistida" || base === "tos dirigida") && form[`${base.replace(/\s+/g, "_")}_comentario`]) return `${base}, ${form[`${base.replace(/\s+/g, "_")}_comentario`].toLowerCase()}`;
       if (base === "aspiración de secreciones" || base === "aspiracion de secreciones") {
         if (form.aspiracion_comentario) return `${base}, ${form.aspiracion_comentario.toLowerCase()}`;
